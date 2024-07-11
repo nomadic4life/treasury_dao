@@ -15,7 +15,7 @@ pub struct MintTokens<'info> {
     #[account(
         mut,
         seeds = [
-            program_authority.key().clone().as_ref(),
+            program_authority.key().as_ref(),
             b"dao-token-mint",
         ],
         bump
@@ -25,6 +25,7 @@ pub struct MintTokens<'info> {
     #[account(
         mut,
         seeds = [
+            program_authority.key().as_ref(),
             b"vault"
         ],
         bump
