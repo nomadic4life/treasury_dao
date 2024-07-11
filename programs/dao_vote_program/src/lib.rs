@@ -13,7 +13,12 @@ pub mod dao_vote_program {
     use super::*;
 
     pub fn initialize_program(ctx: Context<InitializeProgram>) -> Result<()> {
-        ctx.accounts.init()
+        ctx.accounts.init(ctx.bumps.new_authority)?;
+        ctx.accounts.mint()
+    }
+
+    pub fn mint_tokens(ctx: Context<MintTokens>) -> Result<()> {
+        ctx.accounts.mint()
     }
 }
 
@@ -55,3 +60,20 @@ pub struct Initialize {}
 //  - amount
 //  - trigger price
 //  - trigger date
+
+// DAO MEMBERS CRITERA
+//  - must transfer USDC into the DAO treasury
+//  - the ownership ratio is determine by the amount that is transfered into the DAO treasury
+//  - launch process
+//      -> the launch process is the initializing the treasury for the first time
+//      -> it will take place for a set peroid of time so the tresury can fill
+//      -> once the launch phase completes, the ownership ratio is determined
+//      -> and the program tokens are distributed based accordingling to this ratio.
+//  - on going process
+//      -> the on going process will take place after the first vote
+//      -> an user can deposit into the treasury anytime to become a DAO member
+//      -> and the ratio will be determine by the amount the was deposit and the current state of the treasury + investments of that time
+//      -> though the new DAO member will not receive tokens immedaitely,
+//      -> the amount of tokens will be owed to them that will come from the vault aspect
+//      -> that accumulates over time and the DAO member can claim their tokens as that vault fills
+//      -> DAO member can also buy the tokens to vote as well.

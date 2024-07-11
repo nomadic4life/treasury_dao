@@ -23,17 +23,21 @@ pub struct MintTokens<'info> {
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
-        mut,
+        init,
+        payer = authority,
         seeds = [
             program_authority.key().as_ref(),
             b"vault"
         ],
-        bump
+        bump,
+        token::authority = program_authority,
+        token::mint = token_mint,
+        token::token_program = token_program,
     )]
-    // vault | escrow?
     pub vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     pub token_program: Interface<'info, TokenInterface>,
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> MintTokens<'info> {
