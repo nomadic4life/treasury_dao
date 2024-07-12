@@ -38,7 +38,7 @@ pub struct InitializeProgram<'info> {
         init,
         payer = payer,
         seeds = [
-            // program_authority.key().as_ref(),
+            program_authority.key().as_ref(),
             b"launch-vault"
         ],
         bump,
@@ -77,35 +77,34 @@ pub struct InitializeProgram<'info> {
     )]
     pub treasury_status: Box<Account<'info, TreasuryStatus>>,
 
-    #[account(
-        init,
-        payer = payer,
-        seeds = [
-            program_authority.key().as_ref(),
-            b"token-vault"
-        ],
-        bump,
-        token::authority = program_authority,
-        token::mint = new_token_mint,
-        token::token_program = token_program,
-    )]
-    pub token_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    // #[account(
+    //     init,
+    //     payer = payer,
+    //     seeds = [
+    //         program_authority.key().as_ref(),
+    //         b"token-vault"
+    //     ],
+    //     bump,
+    //     token::authority = program_authority,
+    //     token::mint = new_token_mint,
+    //     token::token_program = token_program,
+    // )]
+    // pub token_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
-    #[account(
-        init,
-        payer = payer,
-        // in the future will use zero account abstraction
-        // this will do for easy testing
-        // space = TreasuryStatus::LEN,
-        space = 10240,
-        seeds = [
-            program_authority.key().as_ref(),
-            b"tokne-vault-status"
-        ],
-        bump,
-    )]
-    pub token_vault_status: Box<Account<'info, TokenVaultStatus>>,
-
+    // #[account(
+    //     init,
+    //     payer = payer,
+    //     // in the future will use zero account abstraction
+    //     // this will do for easy testing
+    //     // space = TreasuryStatus::LEN,
+    //     space = 10240,
+    //     seeds = [
+    //         program_authority.key().as_ref(),
+    //         b"tokne-vault-status"
+    //     ],
+    //     bump,
+    // )]
+    // pub token_vault_status: Box<Account<'info, TokenVaultStatus>>,
     pub token_program: Interface<'info, TokenInterface>,
     pub usdc_token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
@@ -120,8 +119,8 @@ impl<'info> InitializeProgram<'info> {
         self.program_authority.treasury_vault_bump = bumps.treasury_vault;
         self.program_authority.treasury_status_bump = bumps.treasury_status;
         self.program_authority.token_mint_bump = bumps.new_token_mint;
-        self.program_authority.token_vault_bump = bumps.token_vault;
-        self.program_authority.token_vault_status_bump = bumps.token_vault_status;
+        // self.program_authority.token_vault_bump = bumps.token_vault;
+        // self.program_authority.token_vault_status_bump = bumps.token_vault_status;
 
         self.program_authority.token_mint = self.new_token_mint.key();
         self.program_authority.max_supply = InitializeProgram::MAX_SUPPLY;

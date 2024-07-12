@@ -6,3 +6,6 @@ pub use stake_token_vault::*;
 
 pub mod stake_treasury_vault;
 pub use stake_treasury_vault::*;
+
+pub mod transfer_tokens;
+pub use transfer_tokens::*;

@@ -16,6 +16,10 @@ pub mod dao_vote_program {
         ctx.accounts.init(&ctx.bumps)
     }
 
+    pub fn transfer_tokens(ctx: Context<TransferTokens>) -> Result<()> {
+        ctx.accounts.transfer()
+    }
+
     pub fn deposit_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
         ctx.accounts.deposit(amount)
     }
