@@ -13,8 +13,7 @@ pub mod dao_vote_program {
     use super::*;
 
     pub fn initialize_program(ctx: Context<InitializeProgram>) -> Result<()> {
-        ctx.accounts.init(ctx.bumps.new_authority)?;
-        ctx.accounts.mint()
+        ctx.accounts.init(&ctx.bumps)
     }
 
     pub fn deposit_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
@@ -27,6 +26,10 @@ pub mod dao_vote_program {
 
     pub fn update_token_vault(ctx: Context<StakeTokenVault>) -> Result<()> {
         ctx.accounts.update()
+    }
+
+    pub fn deposit_treasury_vault(ctx: Context<StakeTreasuryVault>, amount: u64) -> Result<()> {
+        ctx.accounts.deposit(amount)
     }
 }
 
