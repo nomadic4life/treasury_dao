@@ -32,6 +32,8 @@ pub struct InitializeProgram<'info> {
     )]
     pub new_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
+    pub usdc_token_mint: Box<InterfaceAccount<'info, Mint>>,
+
     #[account(
         init,
         payer = payer,
@@ -46,6 +48,20 @@ pub struct InitializeProgram<'info> {
     )]
     pub launch_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
+    #[account(
+        init,
+        payer = payer,
+        seeds = [
+            new_authority.key().as_ref(),
+            b"treasury-vault"
+        ],
+        bump,
+        token::authority = new_authority,
+        token::mint = usdc_token_mint,
+        token::token_program = token_program,
+    )]
+    pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    // treasury state -> balance -> investment
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
@@ -53,6 +69,10 @@ pub struct InitializeProgram<'info> {
 impl<'info> InitializeProgram<'info> {
     pub fn init(&mut self, bump: u8) -> Result<()> {
         self.new_authority.bump = bump;
+        // launch_vault_bump
+        // treasury_vault_bump
+        // token_mint
+        // max_supply
         Ok(())
     }
 

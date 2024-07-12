@@ -1,87 +1,95 @@
+use crate::constants::*;
+use crate::states::*;
+use anchor_lang::prelude::*;
+
+#[account]
 pub struct MemberTokenVaultStatus {
     pub bump: u8,
     pub last_round: Option<u16>,
     pub balance: u64,
-    pub status: Status,
     pub is_member: bool,
 }
 
-enum Status {
-    Deposit,
-    Claim { pub round: u16 },
-}
-
 impl MemberTokenVaultStatus {
+    pub const LEN: usize = DISCRIMINATOR + BYTE + UNSIGNED_16 + UNSIGNED_64 + BYTE;
+    const MAX: u16 = 20;
+    const PERCENT_SHIFT: u64 = 100_00;
+    const MEMBER_RATE: u64 = 90;
+    const NON_MEMBER_RATE: u64 = 60;
+
     pub fn init(&mut self) {
         self.balance = 0;
-        self.round = None;
-        self.status = Status::Deposit;
+        self.last_round = None;
     }
 
-    pub fn update(&mut self, amount: u64, round: u16, vault_status: VaultStatus) -> i64 {
-        if last_round.is_none() {
+    // breaks after 200 years. because current_round is u16 but that is okay.
+    // enough time to make a solution to fix | reset current_round
+    // do to time constraints, this solution will work
+    pub fn update(&mut self, vault_status: &Account<TokenVaultStatus>) {
+        let target = vault_status.current_round;
+        let advance = if target - self.last_round.unwrap() <= MemberTokenVaultStatus::MAX {
+            1
+        } else {
+            (target - self.last_round.unwrap()) / MemberTokenVaultStatus::MAX
+        };
+
+        for _ in 0..MemberTokenVaultStatus::MAX {
+            let round = self.last_round.unwrap();
+            if round >= target {
+                self.last_round = Some(target);
+                break;
+            }
+
+            self.balance = self.value(round, vault_status);
+            self.last_round = Some(round + advance);
+        }
+    }
+
+    pub fn withdraw(&mut self, amount: u64, vault_status: &Account<TokenVaultStatus>) {
+        self.update(vault_status);
+
+        if amount <= self.balance {
+            self.balance -= amount;
+        }
+    }
+
+    pub fn deposit(&mut self, amount: u64, vault_status: &Account<TokenVaultStatus>) {
+        if self.last_round.is_none() {
             self.balance = amount;
-            self.round = Some(round);
-            self.status = Status::Deposit;
+            self.last_round = Some(vault_status.current_round + 1);
             return;
         }
 
-        match self.status {
-            Deposit => self.deposit(amount, round, vault_status),
-            Claim => self.claim(amoun, round, vault_status),
-        }
+        self.update(vault_status);
+        self.balance += amount;
     }
 
-    pub fn claim_status(&mut self, round: u16) {
-        self.status = Status::Claim { round }
-    }
-
-    pub fn claim(&mut self, advance: u16, target: u16, vault_status: VaultStatus) {
-        // lets try to maximize this, starting with 20 iterations
-        for _ in ..20 {
-            let round = self.round.unwrap();
-            if round >= target {
-                self.round = Some(end);
-                break;
-            }
-
-            self.balance = self.value(round, vault_status);
-            self.round = Some(round + advance);
-        }
-    }
-
-    pub fn deposit(&mut self, advance: u16, vault_status: VaultStatus) {
-        for _ in ..20 {
-            let round = self.round.unwrap();
-            if round >= vault_status.round {
-                self.round = Some(vault_status.round);
-                break;
-            }
-
-            self.balance = self.value(round, vault_status);
-            self.round = Some(round + advance);
-        }
-    }
-
-    pub fn share(&self, starting_capital: u64) -> u64 {
-        let mut share = self.balance * 10000 / starting_capital;
+    // we lose percision because using u64,
+    // because of possible overflow issue
+    // can get better percision using 128
+    // and get ratio by n * rate / 100.00%
+    pub fn share(&self, starting_balance: u64) -> u64 {
+        let mut share = self.balance * MemberTokenVaultStatus::PERCENT_SHIFT / starting_balance;
         if !self.is_member {
-            share = share / 100 * 60;
+            share = share / MemberTokenVaultStatus::PERCENT_SHIFT
+                * MemberTokenVaultStatus::NON_MEMBER_RATE;
         } else {
-            share = share / 100 * 90;
+            share =
+                share / MemberTokenVaultStatus::PERCENT_SHIFT * MemberTokenVaultStatus::MEMBER_RATE;
         }
 
         return share;
     }
 
-    pub fn value(&self, round: u16, vault_status: VaultStatus) -> u64 {
-        let (starting_captial, ending_captial) = vault_status.get_capital(round);
-        ending_capital / 10000 * self.share(starting_capital);
+    // using magic numbers -> need change that
+    pub fn value(&self, round: u16, vault_status: &Account<TokenVaultStatus>) -> u64 {
+        let (starting_balance, ending_balance) = vault_status.get_balance_of_round(round);
+        return ending_balance / MemberTokenVaultStatus::PERCENT_SHIFT
+            * self.share(starting_balance);
     }
 }
 
-// TRADE OFF
-//      if tracking active account, then have to iterate 1 round at a time
-//      if not tracking active account, then can skip by 20 | 200 rounds at a time
-//      going with not tracking so can implement skip, makes things simpler and easier, probably better
-// vault_status.deduct_active_account(round);
+// ENDPOINTS:
+//  - update
+//  - deposit
+//  - claim

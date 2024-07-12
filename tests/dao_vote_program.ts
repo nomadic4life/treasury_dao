@@ -23,7 +23,7 @@ describe("dao_vote_program", () => {
   const program = anchor.workspace.DaoVoteProgram as Program<DaoVoteProgram>;
 
   it("Is initialized!", async () => {
-    // Add your test here.
+    // need usdc token mint
     const tx = await program.methods
       .initializeProgram()
       .accounts({

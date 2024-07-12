@@ -17,13 +17,18 @@ pub mod dao_vote_program {
         ctx.accounts.mint()
     }
 
-    pub fn mint_tokens(ctx: Context<MintTokens>) -> Result<()> {
-        ctx.accounts.mint()
+    pub fn deposit_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
+        ctx.accounts.deposit(amount)
+    }
+
+    pub fn withdraw_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
+        ctx.accounts.withdraw(amount)
+    }
+
+    pub fn update_token_vault(ctx: Context<StakeTokenVault>) -> Result<()> {
+        ctx.accounts.update()
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}
 
 // ideation::
 
