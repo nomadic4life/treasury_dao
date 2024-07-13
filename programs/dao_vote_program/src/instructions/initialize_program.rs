@@ -1,4 +1,10 @@
-use crate::states::{ProgramAuthority, ProposalConfig, TokenVaultStatus, TreasuryStatus};
+use crate::states::{
+    ProgramAuthority,
+    ProposalConfig,
+
+    // TokenVaultStatus,
+    TreasuryStatus,
+};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{mint_to, Mint, MintTo, TokenAccount, TokenInterface};
 
@@ -41,7 +47,7 @@ pub struct InitializeProgram<'info> {
         mint::decimals = 9,
         mint::freeze_authority = program_authority,
     )]
-    pub new_token_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     pub usdc_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
@@ -54,7 +60,7 @@ pub struct InitializeProgram<'info> {
         ],
         bump,
         token::authority = program_authority,
-        token::mint = new_token_mint,
+        token::mint = token_mint,
         token::token_program = token_program,
     )]
     pub launch_vault: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -72,6 +78,20 @@ pub struct InitializeProgram<'info> {
         token::token_program = usdc_token_program,
     )]
     pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+
+    #[account(
+        init,
+        payer = payer,
+        seeds = [
+            program_authority.key().as_ref(),
+            b"ballot-vault"
+        ],
+        bump,
+        token::authority = program_authority,
+        token::mint = token_mint,
+        token::token_program = token_program,
+    )]
+    pub ballot_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         init,
@@ -97,7 +117,7 @@ pub struct InitializeProgram<'info> {
     //     ],
     //     bump,
     //     token::authority = program_authority,
-    //     token::mint = new_token_mint,
+    //     token::mint = token_mint,
     //     token::token_program = token_program,
     // )]
     // pub token_vault: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -129,11 +149,12 @@ impl<'info> InitializeProgram<'info> {
         self.program_authority.launch_vault_bump = bumps.launch_vault;
         self.program_authority.treasury_vault_bump = bumps.treasury_vault;
         self.program_authority.treasury_status_bump = bumps.treasury_status;
-        self.program_authority.token_mint_bump = bumps.new_token_mint;
+        self.program_authority.token_mint_bump = bumps.token_mint;
+        self.program_authority.ballot_vault_bump = bumps.ballot_vault;
         // self.program_authority.token_vault_bump = bumps.token_vault;
         // self.program_authority.token_vault_status_bump = bumps.token_vault_status;
 
-        self.program_authority.token_mint = self.new_token_mint.key();
+        self.program_authority.token_mint = self.token_mint.key();
         self.program_authority.max_supply = InitializeProgram::MAX_SUPPLY;
 
         self.mint()?;
@@ -149,7 +170,7 @@ impl<'info> InitializeProgram<'info> {
             CpiContext::new_with_signer(
                 self.token_program.to_account_info(),
                 MintTo {
-                    mint: self.new_token_mint.to_account_info(),
+                    mint: self.token_mint.to_account_info(),
                     to: self.launch_vault.to_account_info(),
                     authority: self.program_authority.to_account_info(),
                 },

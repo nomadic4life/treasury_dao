@@ -18,6 +18,7 @@ import {
 } from "@solana/spl-token";
 
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 
 const {
   Transaction,
@@ -213,9 +214,17 @@ describe("dao_vote_program", () => {
       program.programId
     )
 
+    const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("0"),
+        Buffer.from("position-proposal"),
+      ],
+      program.programId
+    )
+
     const tx = await program.methods
       .createPositionProposal(new anchor.BN(1_000_000_000))
-      .accounts({
+      .accountsPartial({
         // member
         // memeber treasury status
         // pool state 
@@ -224,6 +233,7 @@ describe("dao_vote_program", () => {
         // sytem program
         member: payer.publicKey,
         poolState: mockPoolStatePubkey,
+        positionProposal,
         proposalConfig,
       })
       .signers([payer])
@@ -276,4 +286,78 @@ describe("dao_vote_program", () => {
     console.log("Your transaction signature", tx);
 
   });
+
+  it("Cast Vote", async () => {
+
+    const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("authority")],
+      program.programId
+    )
+
+    const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        programAuthority.toBuffer(),
+        Buffer.from("dao-token-mint"),
+      ],
+      program.programId
+    )
+
+    const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("0"),
+        Buffer.from("position-proposal"),
+      ],
+      program.programId
+    )
+
+    const [memberVoteStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        payer.publicKey.toBuffer(),
+        positionProposal.toBuffer(),
+        Buffer.from("member-vote-status"),
+      ],
+      program.programId
+    )
+
+    const [tokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        programAuthority.toBuffer(),
+        Buffer.from("dao-token-mint"),
+      ],
+      program.programId
+    )
+
+    const [ballotVault] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        programAuthority.toBuffer(),
+        Buffer.from("ballot-vault"),
+      ],
+      program.programId
+    )
+
+    const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+      provider.connection, // connection
+      payer, // payer
+      programTokenMint, // mint
+      payer.publicKey,// owner
+    )
+
+    const tx = await program.methods
+      .castVote(new anchor.BN(1), 1, true)
+      .accountsPartial({
+        member: payer.publicKey,
+        memberVoteStatus,
+        programAuthority,
+        tokenMint,
+        ballotVault,
+        positionProposal,
+        memberTokenAccount: memberTokenAccount.address,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SYSTEM_PROGRAM_ID,
+      })
+      .signers([payer])
+      .rpc();
+
+    console.log("Your transaction signature", tx);
+  })
 });

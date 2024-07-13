@@ -1,4 +1,8 @@
-use crate::states::{MemberTreasuryStatus, PositionProposal, ProposalConfig};
+use crate::states::{
+    // MemberTreasuryStatus,
+    PositionProposal,
+    ProposalConfig,
+};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -19,7 +23,10 @@ pub struct CreatePositionProposal<'info> {
         payer = member,
         space = PositionProposal::LEN,
         seeds = [
-            proposal_config.index.to_be_bytes().as_ref(),
+            // should be number not string, 
+            // but is difficult to get test right with serlizing numbers
+            // proposal_config.index.to_be_bytes().as_ref(),
+            proposal_config.index.to_string().as_bytes(),
             b"position-proposal",
         ],
         bump
@@ -37,9 +44,11 @@ impl<'info> CreatePositionProposal<'info> {
         amount: u64,
     ) -> Result<()> {
         self.position_proposal
-            .init(bumps.position_proposal, self.pool_state.key(), amount);
+            .init(bumps.position_proposal, self.pool_state.key(), amount)?;
 
         self.proposal_config.next();
+
+        // emit event to signal new propsal was made start the voting process
 
         Ok(())
     }

@@ -40,8 +40,28 @@ pub struct StakeTokenVault<'info> {
     )]
     pub token_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
-    pub member_token_vault_status: Account<'info, MemberTokenVaultStatus>,
-    pub token_vault_status: Account<'info, TokenVaultStatus>,
+    #[account(
+        mut,
+        // can use authority instead of deriving from seeds
+        seeds = [
+            member.key().as_ref(),
+            b"member-token-vault-status"
+        ],
+        bump
+    )]
+    pub member_token_vault_status: Box<Account<'info, MemberTokenVaultStatus>>,
+
+    #[account(
+        mut,
+        // can use authority instead of deriving from seeds
+        seeds = [
+            program_authority.key().as_ref(),
+            b"token-vault-status"
+        ],
+        bump
+    )]
+    pub token_vault_status: Box<Account<'info, TokenVaultStatus>>,
+
     pub token_program: Interface<'info, TokenInterface>,
 }
 

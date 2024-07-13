@@ -6,6 +6,7 @@ pub use anchor_lang::solana_program::pubkey::PUBKEY_BYTES;
 pub struct ProgramAuthority {
     pub bump: u8,
     pub launch_vault_bump: u8,
+    pub ballot_vault_bump: u8,
     pub token_mint_bump: u8,
 
     pub token_vault_bump: u8,
@@ -19,5 +20,5 @@ pub struct ProgramAuthority {
 }
 
 impl ProgramAuthority {
-    pub const LEN: usize = DISCRIMINATOR + (BYTE * 7) + PUBKEY_BYTES + UNSIGNED_64;
+    pub const LEN: usize = DISCRIMINATOR + (BYTE * 8) + PUBKEY_BYTES + UNSIGNED_64;
 }

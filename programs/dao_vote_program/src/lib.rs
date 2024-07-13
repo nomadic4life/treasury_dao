@@ -1,6 +1,7 @@
 mod constants;
 mod instructions;
 mod states;
+mod utils;
 use anchor_lang::prelude::*;
 
 use instructions::*;
@@ -27,6 +28,15 @@ pub mod dao_vote_program {
         ctx.accounts.transfer()
     }
 
+    pub fn cast_vote(
+        ctx: Context<CastVote>,
+        amount: u64,
+        multiplier: u8,
+        is_yes: bool,
+    ) -> Result<()> {
+        ctx.accounts.cast_vote(amount, multiplier, is_yes)
+    }
+
     pub fn deposit_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
         ctx.accounts.deposit(amount)
     }
@@ -43,9 +53,9 @@ pub mod dao_vote_program {
         ctx.accounts.deposit(amount)
     }
 
-    // pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
-    //     Ok(())
-    // }
+    pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
+        ctx.accounts.swap()
+    }
 }
 
 // ideation::
