@@ -35,6 +35,10 @@ pub mod dao_vote_program {
     pub fn deposit_treasury_vault(ctx: Context<StakeTreasuryVault>, amount: u64) -> Result<()> {
         ctx.accounts.deposit(amount)
     }
+
+    pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
+        Ok(())
+    }
 }
 
 // ideation::

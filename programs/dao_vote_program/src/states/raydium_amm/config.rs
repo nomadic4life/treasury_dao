@@ -1,7 +1,7 @@
 // COPY FROM -> https://github.com/raydium-io/raydium-cp-swap/blob/master/programs/cp-swap/src/states/config.rs
 use anchor_lang::prelude::*;
 
-pub const AMM_CONFIG_SEED: &str = "amm_config";
+// pub const AMM_CONFIG_SEED: &str = "amm_config";
 
 /// Holds the current owner of the factory
 #[account]

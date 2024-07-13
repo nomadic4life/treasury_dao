@@ -4,14 +4,8 @@ pub use program_authority::*;
 pub mod status;
 pub use status::*;
 
-pub mod oracle;
-pub use oracle::*;
-
-pub mod pool;
-pub use pool::*;
-
-pub mod config;
-pub use config::*;
+pub mod raydium_amm;
+pub use raydium_amm::*;
 
 // locking programing tokens
 //  - to earn tokens from tax coming from voting
