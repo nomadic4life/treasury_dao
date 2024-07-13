@@ -1,4 +1,4 @@
-use crate::states::{ProgramAuthority, TokenVaultStatus, TreasuryStatus};
+use crate::states::{ProgramAuthority, ProposalConfig, TokenVaultStatus, TreasuryStatus};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{mint_to, Mint, MintTo, TokenAccount, TokenInterface};
 
@@ -17,6 +17,17 @@ pub struct InitializeProgram<'info> {
         bump,
     )]
     pub program_authority: Box<Account<'info, ProgramAuthority>>,
+
+    #[account(
+        init,
+        payer = payer,
+        space = ProposalConfig::LEN,
+        seeds = [
+            b"proposal-config"
+        ],
+        bump,
+    )]
+    pub proposal_config: Box<Account<'info, ProposalConfig>>,
 
     #[account(
         init,

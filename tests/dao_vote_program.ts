@@ -201,6 +201,36 @@ describe("dao_vote_program", () => {
     console.log("Your transaction signature", tx);
   });
 
+  it("Create Position Proposal!", async () => {
+
+    const [mockPoolStatePubkey] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("mock-pubkey")],
+      program.programId
+    )
+
+    const [proposalConfig] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("proposal-config")],
+      program.programId
+    )
+
+    const tx = await program.methods
+      .createPositionProposal(new anchor.BN(1_000_000_000))
+      .accounts({
+        // member
+        // memeber treasury status
+        // pool state 
+        // position proposal
+        // proposal config
+        // sytem program
+        member: payer.publicKey,
+        poolState: mockPoolStatePubkey,
+        proposalConfig,
+      })
+      .signers([payer])
+      .rpc();
+    console.log("Your transaction signature", tx);
+  });
+
   // how this test is currently set up. it allows me to test the voting process 
   // without worring about token issuance from launch vault
   it("transfer tokens!", async () => {

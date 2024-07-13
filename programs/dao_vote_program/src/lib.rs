@@ -16,6 +16,13 @@ pub mod dao_vote_program {
         ctx.accounts.init(&ctx.bumps)
     }
 
+    pub fn create_position_proposal(
+        ctx: Context<CreatePositionProposal>,
+        amount: u64,
+    ) -> Result<()> {
+        ctx.accounts.create_position_proposal(&ctx.bumps, amount)
+    }
+
     pub fn transfer_tokens(ctx: Context<TransferTokens>) -> Result<()> {
         ctx.accounts.transfer()
     }
@@ -36,9 +43,9 @@ pub mod dao_vote_program {
         ctx.accounts.deposit(amount)
     }
 
-    pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
-        Ok(())
-    }
+    // pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
+    //     Ok(())
+    // }
 }
 
 // ideation::
