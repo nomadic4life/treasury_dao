@@ -52,7 +52,7 @@ impl TreasuryStatus {
             ending_valuation: 0,
         };
 
-        self.write(&field);
+        self.write(&field)?;
 
         Ok(())
     }

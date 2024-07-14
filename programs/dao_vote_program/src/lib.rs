@@ -13,6 +13,44 @@ pub mod dao_vote_program {
 
     use super::*;
 
+    pub fn transfer_rent_zero_copy_treasury(
+        ctx: Context<TransferRentZeroCopyTreasury>,
+        seed_option: bool,
+    ) -> Result<()> {
+        ctx.accounts.transfer_rent(seed_option)
+    }
+
+    pub fn transfer_rent_zero_copy_tokens(
+        ctx: Context<TransferRentZeroCopyTokens>,
+        seed_option: bool,
+    ) -> Result<()> {
+        ctx.accounts.transfer_rent(seed_option)
+    }
+
+    pub fn assign_zero_copy_treasury(ctx: Context<AssignZeroCopyTreasury>) -> Result<()> {
+        ctx.accounts.assign(&ctx.bumps, ctx.program_id.key())
+    }
+
+    pub fn assign_zero_copy_tokens(ctx: Context<AssignZeroCopyTokens>) -> Result<()> {
+        ctx.accounts.assign(&ctx.bumps, ctx.program_id.key())
+    }
+
+    pub fn realloc_zero_copy_treasury(ctx: Context<ReallocZeroCopyTreasury>) -> Result<()> {
+        ctx.accounts.realloc()
+    }
+
+    pub fn realloc_zero_copy_tokens(ctx: Context<ReallocZeroCopyTokens>) -> Result<()> {
+        ctx.accounts.realloc()
+    }
+
+    pub fn initialize_zero_copy_treasury(ctx: Context<InitializeZeroCopyTreasury>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
+    pub fn initialize_zero_copy_tokens(ctx: Context<InitializeZeroCopyTokens>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
     pub fn initialize_program(ctx: Context<InitializeProgram>) -> Result<()> {
         ctx.accounts.init(&ctx.bumps)
     }
