@@ -12,7 +12,7 @@ pub struct CreateMemberTreasuryStatus<'info> {
     #[account(
         init,
         payer = member,
-        space = MemberTreasuryStatus::LEN,
+        space = MemberTreasuryStatus::LEN + 1000,
         seeds = [
             member.key().as_ref(),
             b"member-status"
@@ -37,8 +37,8 @@ pub struct CreateMemberTreasuryStatus<'info> {
     pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
-        mut,
-        address = program_authority.treasury_token_mint,
+        // mut,
+        // address = program_authority.treasury_token_mint,
     )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 

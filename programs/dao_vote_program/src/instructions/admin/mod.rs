@@ -12,3 +12,6 @@ pub use initialize_vaults::*;
 
 pub mod initialize_authority;
 pub use initialize_authority::*;
+
+pub mod mint_tokens;
+pub use mint_tokens::*;

@@ -86,7 +86,6 @@ class Token {
 
   createTokenAccount = async ({ connection, payer }) => {
 
-
     const tokenAccount = await getAssociatedTokenAddress(
       this.mint.publicKey,
       // this.mint.keypair.publicKey,
@@ -108,6 +107,7 @@ class Token {
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
       ))
+
 
     const tx = await sendAndConfirmTransaction(connection, transaction, [payer])
 
@@ -178,156 +178,158 @@ describe("dao_vote_program", () => {
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
       signature: tx,
     });
+
     await tokenMint.createMint(provider.connection, payer);
+    // await tokenMint.mintToken({ connection: provider.connection, payer })
   })
 
   describe("Initialize Program", () => {
 
-    // describe("Zero Copy Accounts", () => {
-    //   it("Transfer Rent Treasury", async () => {
+    describe("Zero Copy Accounts", () => {
+      it("Transfer Rent Treasury", async () => {
 
-    //     const tx = await program.methods
-    //       .transferRentZeroCopyTreasury()
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        const tx = await program.methods
+          .transferRentZeroCopyTreasury()
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Transfer Rent Tokens", async () => {
+      it("Transfer Rent Tokens", async () => {
 
-    //     const tx = await program.methods
-    //       .transferRentZeroCopyTokens()
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        const tx = await program.methods
+          .transferRentZeroCopyTokens()
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Assign And Allocate Treasury", async () => {
+      it("Assign And Allocate Treasury", async () => {
 
-    //     const tx = await program.methods
-    //       .assignZeroCopyTreasury()
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        const tx = await program.methods
+          .assignZeroCopyTreasury()
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Assign And Allocate Tokens", async () => {
+      it("Assign And Allocate Tokens", async () => {
 
-    //     const tx = await program.methods
-    //       .assignZeroCopyTokens()
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        const tx = await program.methods
+          .assignZeroCopyTokens()
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Realloc Treasury", async () => {
+      it("Realloc Treasury", async () => {
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 2)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 2)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 3)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 3)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 4)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 4)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 5)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 5)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 6)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 6)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 7)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 7)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 8)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 8)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 9)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 9)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTreasury(10240 * 10)
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        await program.methods
+          .reallocZeroCopyTreasury(10240 * 10)
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Realloc Tokens", async () => {
+      it("Realloc Tokens", async () => {
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 2)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 2)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 3)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 3)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 4)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 4)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 5)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 5)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 6)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 6)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 7)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 7)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 8)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 8)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 9)
-    //       .accounts({})
-    //       .rpc();
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 9)
+          .accounts({})
+          .rpc();
 
-    //     await program.methods
-    //       .reallocZeroCopyTokens(10240 * 10)
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        await program.methods
+          .reallocZeroCopyTokens(10240 * 10)
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Initialize Treasury", async () => {
+      it("Initialize Treasury", async () => {
 
-    //     const tx = await program.methods
-    //       .initializeZeroCopyTreasury()
-    //       .accounts({})
-    //       .rpc();
-    //   })
+        const tx = await program.methods
+          .initializeZeroCopyTreasury()
+          .accounts({})
+          .rpc();
+      })
 
-    //   it("Initialize Tokens", async () => {
+      it("Initialize Tokens", async () => {
 
-    //     const tx = await program.methods
-    //       .initializeZeroCopyTokens()
-    //       .accounts({})
-    //       .rpc();
-    //   })
-    // })
+        const tx = await program.methods
+          .initializeZeroCopyTokens()
+          .accounts({})
+          .rpc();
+      })
+    })
 
     describe("Initialize Program", () => {
 
@@ -341,12 +343,81 @@ describe("dao_vote_program", () => {
 
       it("Initialize Mint", async () => {
 
-        const tx = await program.methods
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [launchVault] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("launch-vault")
+          ],
+          program.programId
+        )
+
+
+        const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("dao-token-mint")
+          ],
+          program.programId
+        )
+
+
+
+        await program.methods
           .initializeMint()
-          .accounts({
+          .accountsStrict({
+            payer: payer.publicKey,
+            programAuthority,
+            tokenMint: programTokenMint,
             tokenProgram: TOKEN_PROGRAM_ID,
+            systemProgram: SYSTEM_PROGRAM_ID,
           })
+          .signers([payer])
           .rpc();
+
+      })
+
+      it("Mint Tokens", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [launchVault] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("launch-vault")
+          ],
+          program.programId
+        )
+
+
+        const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("dao-token-mint")
+          ],
+          program.programId
+        )
+
+        await program.methods
+          .mintTokens()
+          .accountsStrict({
+            payer: payer.publicKey,
+            programAuthority,
+            launchVault,
+            tokenMint: programTokenMint,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            systemProgram: SYSTEM_PROGRAM_ID,
+          })
+          .signers([payer])
+          .rpc();
+
       })
     })
 
@@ -382,6 +453,164 @@ describe("dao_vote_program", () => {
           .rpc();
       })
     })
+
+
+
+  })
+
+  describe("Launch Phase", () => {
+    it("Join DAO", async () => {
+
+      const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("authority")],
+        program.programId
+      )
+
+      const [treasuryVault] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          programAuthority.toBuffer(),
+          Buffer.from("treasury-vault")
+        ],
+        program.programId
+      )
+
+      const [treasuryStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          programAuthority.toBuffer(),
+          Buffer.from("treasury-status")
+        ],
+        program.programId
+      )
+
+      // const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+      //   [
+      //     programAuthority.toBuffer(),
+      //     Buffer.from("dao-token-mint")
+      //   ],
+      //   program.programId
+      // )
+
+      const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+        provider.connection, // connection
+        payer, // payer
+        // programTokenMint, // mint
+        tokenMint.mint.publicKey,
+        payer.publicKey,// owner
+      )
+
+      const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          payer.publicKey.toBuffer(),
+          Buffer.from("member-status")
+        ],
+        program.programId
+      )
+
+
+
+      await program.methods
+        .joinDao(new anchor.BN(1 * 1_000_000))
+        .accountsPartial({
+          member: payer.publicKey,
+          treasuryVault,
+          treasuryStatus,
+          memberStatus,
+          memberTokenAccount: memberTokenAccount.address,
+          tokenMint: tokenMint.mint.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          programAuthority,
+          systemProgram: SYSTEM_PROGRAM_ID,
+        })
+        .signers([payer])
+        .rpc();
+    })
+
+
+    // it("Launch Token -> Launch Members Claim", async () => {
+
+    //   const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+    //     [Buffer.from("authority")],
+    //     program.programId
+    //   )
+
+
+
+    //   const [treasuryStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+    //     [
+    //       programAuthority.toBuffer(),
+    //       Buffer.from("treasury-status")
+    //     ],
+    //     program.programId
+    //   )
+
+    //   const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+    //     [
+    //       programAuthority.toBuffer(),
+    //       Buffer.from("dao-token-mint")
+    //     ],
+    //     program.programId
+    //   )
+
+    //   const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+    //     provider.connection, // connection
+    //     payer, // payer
+    //     // programTokenMint, // mint
+    //     tokenMint.mint.publicKey,
+    //     payer.publicKey,// owner
+    //   )
+
+    //   const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+    //     [
+    //       payer.publicKey.toBuffer(),
+    //       Buffer.from("member-status")
+    //     ],
+    //     program.programId
+    //   )
+
+    //   const [launchVault] = anchor.web3.PublicKey.findProgramAddressSync(
+    //     [
+    //       programAuthority.toBuffer(),
+    //       Buffer.from("launch-vault")
+    //     ],
+    //     program.programId
+    //   )
+
+    //   console.log(launchVault)
+
+    //   const tx = await program.methods
+    //     .launch()
+    //     .accountsPartial({
+    //       member: payer.publicKey,
+    //       memberStatus,
+    //       treasuryStatus,
+    //       memberTokenAccount: memberTokenAccount.address,
+    //       launchVault,
+    //       tokenProgram: TOKEN_PROGRAM_ID,
+    //       programAuthority,
+    //       tokenMint: programTokenMint
+    //     })
+    //     .signers([payer])
+    //     .prepare()
+
+    //   console.log(tx.instruction)
+
+    //   await program.methods
+    //     .launch()
+    //     .accountsPartial({
+    //       member: payer.publicKey,
+    //       memberStatus,
+    //       treasuryStatus,
+    //       memberTokenAccount: memberTokenAccount.address,
+    //       launchVault,
+    //       tokenProgram: TOKEN_PROGRAM_ID,
+    //       programAuthority,
+    //       tokenMint: programTokenMint
+    //     })
+    //     .signers([payer])
+    //     .rpc();
+    // })
+
+
 
   })
 

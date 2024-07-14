@@ -28,7 +28,6 @@ pub struct InitializeZeroCopyTreasury<'info> {
 impl<'info> InitializeZeroCopyTreasury<'info> {
     pub fn init(&mut self) -> Result<()> {
         self.treasury_status.load_init()?;
-
         Ok(())
     }
 }

@@ -70,6 +70,10 @@ pub mod dao_vote_program {
         ctx.accounts.init()
     }
 
+    pub fn mint_tokens(ctx: Context<MintTokens>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
     pub fn initialize_authority(ctx: Context<InitializeAuthority>) -> Result<()> {
         ctx.accounts.init(ctx.bumps.program_authority)
     }
