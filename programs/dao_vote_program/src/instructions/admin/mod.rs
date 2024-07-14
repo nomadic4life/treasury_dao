@@ -6,3 +6,6 @@ pub use initialize_token_status::*;
 
 pub mod initialize;
 pub use initialize::*;
+
+pub mod initialize_vaults;
+pub use initialize_vaults::*;

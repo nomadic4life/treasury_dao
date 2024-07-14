@@ -15,16 +15,12 @@ pub mod dao_vote_program {
 
     pub fn transfer_rent_zero_copy_treasury(
         ctx: Context<TransferRentZeroCopyTreasury>,
-        seed_option: bool,
     ) -> Result<()> {
-        ctx.accounts.transfer_rent(seed_option)
+        ctx.accounts.transfer_rent()
     }
 
-    pub fn transfer_rent_zero_copy_tokens(
-        ctx: Context<TransferRentZeroCopyTokens>,
-        seed_option: bool,
-    ) -> Result<()> {
-        ctx.accounts.transfer_rent(seed_option)
+    pub fn transfer_rent_zero_copy_tokens(ctx: Context<TransferRentZeroCopyTokens>) -> Result<()> {
+        ctx.accounts.transfer_rent()
     }
 
     pub fn assign_zero_copy_treasury(ctx: Context<AssignZeroCopyTreasury>) -> Result<()> {
@@ -51,9 +47,13 @@ pub mod dao_vote_program {
         ctx.accounts.init()
     }
 
-    pub fn initialize_program(ctx: Context<InitializeProgram>) -> Result<()> {
-        ctx.accounts.init(&ctx.bumps)
+    pub fn initialize_vaults(ctx: Context<InitializeVaults>) -> Result<()> {
+        ctx.accounts.init()
     }
+
+    // pub fn initialize_program(ctx: Context<InitializeProgram>) -> Result<()> {
+    //     ctx.accounts.init(&ctx.bumps)
+    // }
 
     pub fn join_dao(ctx: Context<CreateMemberTreasuryStatus>, amount: u64) -> Result<()> {
         ctx.accounts.join(amount, &ctx.bumps)

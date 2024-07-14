@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
 #[derive(Accounts)]
-#[instruction(seed: bool)]
 pub struct TransferRentZeroCopyTokens<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -13,7 +12,7 @@ pub struct TransferRentZeroCopyTokens<'info> {
         payer = payer,
         space = AllocationTracker::LEN,
         seeds = [
-            AllocationTracker::get(seed).as_bytes(),
+            b"token-status",
         ],
         bump
     )]
@@ -40,8 +39,8 @@ pub struct TransferRentZeroCopyTokens<'info> {
 }
 
 impl<'info> TransferRentZeroCopyTokens<'info> {
-    pub fn transfer_rent(&mut self, seed: bool) -> Result<()> {
-        self.allocation_tracker.init(seed);
+    pub fn transfer_rent(&mut self) -> Result<()> {
+        self.allocation_tracker.init(0);
 
         let space = TokenStatus::LEN;
 

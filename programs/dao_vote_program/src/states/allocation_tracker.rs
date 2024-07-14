@@ -12,8 +12,8 @@ impl AllocationTracker {
     pub const TARGET: u64 = 10240 * 50;
 
     // cutting cornings because really short on time.
-    pub fn init(&mut self, seed: bool) {
-        if seed {
+    pub fn init(&mut self, seed: u8) {
+        if seed != 0 {
             self.seed = String::from("treasury-status");
         } else {
             self.seed = String::from("treasury-status");
@@ -21,8 +21,8 @@ impl AllocationTracker {
     }
 
     // cutting cornings because really short on time.
-    pub fn get(seed: bool) -> String {
-        let data = if seed {
+    pub fn get(seed: u8) -> String {
+        let data = if seed != 0 {
             String::from("treasury-status")
         } else {
             String::from("treasury-status")

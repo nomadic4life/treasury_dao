@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
 #[derive(Accounts)]
-#[instruction(seed: bool)]
 pub struct TransferRentZeroCopyTreasury<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -13,7 +12,7 @@ pub struct TransferRentZeroCopyTreasury<'info> {
         payer = payer,
         space = AllocationTracker::LEN,
         seeds = [
-            AllocationTracker::get(seed).as_bytes(),
+            b"treasury-status",
         ],
         bump
     )]
@@ -41,8 +40,8 @@ pub struct TransferRentZeroCopyTreasury<'info> {
 }
 
 impl<'info> TransferRentZeroCopyTreasury<'info> {
-    pub fn transfer_rent(&mut self, seed: bool) -> Result<()> {
-        self.allocation_tracker.init(seed);
+    pub fn transfer_rent(&mut self) -> Result<()> {
+        self.allocation_tracker.init(1);
         let space = TreasuryStatus::LEN;
 
         let rent = Rent::get()?.minimum_balance(space.try_into().expect("overflow"));

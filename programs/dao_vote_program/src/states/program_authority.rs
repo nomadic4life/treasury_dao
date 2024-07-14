@@ -47,4 +47,17 @@ impl ProgramAuthority {
         self.treasury_token_mint = treasury_token_mint;
         self.token_mint = token_mint;
     }
+
+    pub fn add_vaults(
+        &mut self,
+        treasury_vault: Pubkey,
+        ballot_vault: Pubkey,
+        launch_vault: Pubkey,
+        token_vault: Pubkey,
+    ) {
+        self.treasury_vault = treasury_vault;
+        self.ballot_vault = ballot_vault;
+        self.launch_vault = launch_vault;
+        self.token_vault = token_vault;
+    }
 }
