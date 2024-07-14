@@ -16,11 +16,13 @@ pub struct ProgramAuthority {
     pub treasury_status: Pubkey,
     pub token_status: Pubkey,
 
+    pub proposal_config: Pubkey,
+
     pub max_supply: u64,
 }
 
 impl ProgramAuthority {
-    pub const LEN: usize = DISCRIMINATOR + (PUBKEY_BYTES * 8) + UNSIGNED_64;
+    pub const LEN: usize = DISCRIMINATOR + (PUBKEY_BYTES * 9) + UNSIGNED_64;
 
     pub fn init(
         &mut self,

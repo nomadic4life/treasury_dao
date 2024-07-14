@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
 #[derive(Accounts)]
-pub struct InitializeVaults<'info> {
+pub struct InitializeLaunchVault<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -29,10 +29,12 @@ pub struct InitializeVaults<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> InitializeVaults<'info> {
+impl<'info> InitializeLaunchVault<'info> {
     pub fn init(&mut self) -> Result<()> {
         self.program_authority.launch_vault = self.launch_vault.key();
 
         Ok(())
     }
 }
+
+// can remove

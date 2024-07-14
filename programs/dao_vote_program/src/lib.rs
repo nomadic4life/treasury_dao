@@ -47,13 +47,29 @@ pub mod dao_vote_program {
         ctx.accounts.init()
     }
 
-    pub fn initialize_vaults(ctx: Context<InitializeVaults>) -> Result<()> {
+    pub fn initialize_treasury_vaults(ctx: Context<InitializeTreasuryVault>) -> Result<()> {
         ctx.accounts.init()
     }
 
-    // pub fn initialize_program(ctx: Context<InitializeProgram>) -> Result<()> {
-    //     ctx.accounts.init(&ctx.bumps)
-    // }
+    pub fn initialize_launch_vaults(ctx: Context<InitializeLaunchVault>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
+    pub fn initialize_ballot_vaults(ctx: Context<InitializeBallotVault>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
+    pub fn initialize_token_vaults(ctx: Context<InitializeTokenVault>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
+    pub fn initialize_mint(ctx: Context<InitializeMint>) -> Result<()> {
+        ctx.accounts.init()
+    }
+
+    pub fn initialize_program(ctx: Context<InitializeAuthority>) -> Result<()> {
+        ctx.accounts.init(ctx.bumps.program_authority)
+    }
 
     pub fn join_dao(ctx: Context<CreateMemberTreasuryStatus>, amount: u64) -> Result<()> {
         ctx.accounts.join(amount, &ctx.bumps)
