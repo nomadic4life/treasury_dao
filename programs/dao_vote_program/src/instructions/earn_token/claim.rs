@@ -23,7 +23,7 @@ pub struct ClaimTokens<'info> {
         mut,
         address = program_authority.token_status,
     )]
-    pub token_status: Box<Account<'info, TokenStatus>>,
+    pub token_status: AccountLoader<'info, TokenStatus>,
 
     #[account(
         mut,
@@ -44,11 +44,11 @@ pub struct ClaimTokens<'info> {
 
 impl<'info> ClaimTokens<'info> {
     pub fn claim(&mut self, amount: u64) -> Result<()> {
-        self.token_status.withdraw(amount)?;
+        let token_status = &mut self.token_status.load_mut()?;
+        token_status.withdraw(amount)?;
 
         // right now is_treasury member_status false, since there is no way to inlcude yet
-        self.member_status
-            .withdraw(amount, &self.token_status, false);
+        self.member_status.withdraw(amount, &token_status, false);
 
         let seeds = &[b"authority", &[self.program_authority.bump][..]];
         let signer_seeds = &[&seeds[..]];
@@ -71,5 +71,3 @@ impl<'info> ClaimTokens<'info> {
         Ok(())
     }
 }
-
-// currently working on

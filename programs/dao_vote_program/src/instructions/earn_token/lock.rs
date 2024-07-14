@@ -23,7 +23,7 @@ pub struct LockTokens<'info> {
         mut,
         address = program_authority.token_status,
     )]
-    pub token_status: Box<Account<'info, TokenStatus>>,
+    pub token_status: AccountLoader<'info, TokenStatus>,
 
     #[account(
         mut,
@@ -44,11 +44,11 @@ pub struct LockTokens<'info> {
 
 impl<'info> LockTokens<'info> {
     pub fn lock(&mut self, amount: u64) -> Result<()> {
-        self.token_status.deposit(amount)?;
+        let token_status = &mut self.token_status.load_mut()?;
+        token_status.deposit(amount)?;
 
         // right now is_treasury member_status false, since there is no way to inlcude yet
-        self.member_status
-            .deposit(amount, &self.token_status, false);
+        self.member_status.deposit(amount, &token_status, false);
 
         transfer_checked(
             CpiContext::new(
