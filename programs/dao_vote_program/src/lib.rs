@@ -33,11 +33,8 @@ pub mod dao_vote_program {
         ctx.accounts.claim()
     }
 
-    pub fn create_position_proposal(
-        ctx: Context<CreatePositionProposal>,
-        amount: u64,
-    ) -> Result<()> {
-        ctx.accounts.create_position_proposal(&ctx.bumps, amount)
+    pub fn make_proposal(ctx: Context<CreatePositionProposal>, amount: u64) -> Result<()> {
+        ctx.accounts.make_proposal(&ctx.bumps, amount)
     }
 
     pub fn cast_vote(
@@ -46,7 +43,12 @@ pub mod dao_vote_program {
         multiplier: u8,
         is_yes: bool,
     ) -> Result<()> {
-        ctx.accounts.cast_vote(amount, multiplier, is_yes)
+        ctx.accounts
+            .cast_vote(ctx.bumps.member_vote_status, amount, multiplier, is_yes)
+    }
+
+    pub fn claim_vote_token(ctx: Context<ClaimVotedTokens>) -> Result<()> {
+        ctx.accounts.claim()
     }
 
     // pub fn deposit_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {

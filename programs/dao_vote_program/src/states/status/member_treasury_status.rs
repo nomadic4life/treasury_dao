@@ -17,7 +17,7 @@ impl MemberTreasuryStatus {
     const MAX: u16 = 20;
     const PERCENT_SHIFT: u64 = 100_00;
     const MEMBER_RATE: u64 = 90;
-    const NON_MEMBER_RATE: u64 = 60;
+    // const NON_MEMBER_RATE: u64 = 60;
 
     pub fn init(&mut self, bump: u8, member: Pubkey) {
         self.bump = bump;
@@ -114,6 +114,10 @@ impl MemberTreasuryStatus {
 
     pub fn is_valid_launch_member(&self) -> bool {
         return !(self.last_round.is_some() && self.last_round.unwrap() == 1);
+    }
+
+    pub fn is_valid_member(&self) -> bool {
+        return self.last_round.is_some() && self.valuation != 0;
     }
 }
 
