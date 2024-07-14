@@ -1,4 +1,4 @@
-use crate::states::{ProgramAuthority, ProposalConfig};
+use crate::states::ProgramAuthority;
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{mint_to, Mint, MintTo, TokenAccount, TokenInterface};
 
@@ -8,26 +8,12 @@ pub struct InitializeMint<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        init,
-        payer = payer,
-        space = ProgramAuthority::LEN,
         seeds = [
             b"authority"
         ],
         bump,
     )]
     pub program_authority: Box<Account<'info, ProgramAuthority>>,
-
-    #[account(
-        init,
-        payer = payer,
-        space = ProposalConfig::LEN,
-        seeds = [
-            b"proposal-config"
-        ],
-        bump,
-    )]
-    pub proposal_config: Box<Account<'info, ProposalConfig>>,
 
     #[account(
         init,

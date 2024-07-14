@@ -29,6 +29,7 @@ pub struct AssignZeroCopyTokens<'info> {
 
 impl<'info> AssignZeroCopyTokens<'info> {
     const MAX_SPACE: u64 = 10240;
+
     pub fn assign(&mut self, bumps: &AssignZeroCopyTokensBumps, program_id: Pubkey) -> Result<()> {
         let seeds = &[
             self.program_authority.key.as_ref(),

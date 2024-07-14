@@ -3,17 +3,13 @@ use anchor_lang::prelude::*;
 
 #[account(zero_copy)]
 pub struct TreasuryStatus {
-    // pub current_round: u16,
-    // pub last_slot_update: u64,
-    // pub table: Vec<Field>,
     pub current_round: [u8; 8],
     pub last_slot_update: [u8; 8],
-    pub fields: [u8; TreasuryStatus::LEN],
+    pub fields: [u8; TreasuryStatus::LEN - 10240],
 }
 
 impl TreasuryStatus {
-    pub const LEN: usize =
-        DISCRIMINATOR + UNSIGNED_16 + UNSIGNED_64 + (UNSIGNED_32 + Field::LEN * u16::MAX as usize);
+    pub const LEN: usize = (10240 * 11) - (DISCRIMINATOR + (BYTE * 8) + (BYTE * 8));
 
     pub const MAX_SLOT_RANGE: u64 = 216_000 * 30;
 

@@ -7,7 +7,13 @@ pub struct InitializeTokenVault<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        seeds = [
+            b"authority"
+        ],
+        bump,
+    )]
     pub program_authority: Box<Account<'info, ProgramAuthority>>,
 
     #[account(
@@ -24,7 +30,15 @@ pub struct InitializeTokenVault<'info> {
     )]
     pub token_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
+    #[account(
+        seeds = [
+            program_authority.key().as_ref(),
+            b"dao-token-mint",
+        ],
+        bump,
+    )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
+
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }

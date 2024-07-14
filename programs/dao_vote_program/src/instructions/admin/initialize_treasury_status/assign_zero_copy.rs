@@ -29,6 +29,7 @@ pub struct AssignZeroCopyTreasury<'info> {
 
 impl<'info> AssignZeroCopyTreasury<'info> {
     const MAX_SPACE: u64 = 10240;
+
     pub fn assign(
         &mut self,
         bumps: &AssignZeroCopyTreasuryBumps,

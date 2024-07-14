@@ -181,183 +181,390 @@ describe("dao_vote_program", () => {
     await tokenMint.createMint(provider.connection, payer);
   })
 
-  it("Is initialized!", async () => {
-    // need usdc token mint
+  describe("Initialize Program", () => {
 
-    console.log(tokenMint.mint)
+    // describe("Zero Copy Accounts", () => {
+    //   it("Transfer Rent Treasury", async () => {
 
-    const tx = await program.methods
-      .initializeProgram()
-      .accounts({
-        usdcTokenMint: tokenMint.mint.publicKey,
-        // tokenProgram: TOKEN_2022_PROGRAM_ID,
+    //     const tx = await program.methods
+    //       .transferRentZeroCopyTreasury()
+    //       .accounts({})
+    //       .rpc();
+    //   })
 
-        // for testing, because can't figure out how to create ATA with TOKEN_2022_PROGRAM_ID,
-        tokenProgram: TOKEN_PROGRAM_ID,
+    //   it("Transfer Rent Tokens", async () => {
 
-        usdcTokenProgram: TOKEN_PROGRAM_ID,
+    //     const tx = await program.methods
+    //       .transferRentZeroCopyTokens()
+    //       .accounts({})
+    //       .rpc();
+    //   })
+
+    //   it("Assign And Allocate Treasury", async () => {
+
+    //     const tx = await program.methods
+    //       .assignZeroCopyTreasury()
+    //       .accounts({})
+    //       .rpc();
+    //   })
+
+    //   it("Assign And Allocate Tokens", async () => {
+
+    //     const tx = await program.methods
+    //       .assignZeroCopyTokens()
+    //       .accounts({})
+    //       .rpc();
+    //   })
+
+    //   it("Realloc Treasury", async () => {
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 2)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 3)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 4)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 5)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 6)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 7)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 8)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 9)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTreasury(10240 * 10)
+    //       .accounts({})
+    //       .rpc();
+    //   })
+
+    //   it("Realloc Tokens", async () => {
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 2)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 3)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 4)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 5)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 6)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 7)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 8)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 9)
+    //       .accounts({})
+    //       .rpc();
+
+    //     await program.methods
+    //       .reallocZeroCopyTokens(10240 * 10)
+    //       .accounts({})
+    //       .rpc();
+    //   })
+
+    //   it("Initialize Treasury", async () => {
+
+    //     const tx = await program.methods
+    //       .initializeZeroCopyTreasury()
+    //       .accounts({})
+    //       .rpc();
+    //   })
+
+    //   it("Initialize Tokens", async () => {
+
+    //     const tx = await program.methods
+    //       .initializeZeroCopyTokens()
+    //       .accounts({})
+    //       .rpc();
+    //   })
+    // })
+
+    describe("Initialize Program", () => {
+
+      it("Initialize Authority", async () => {
+
+        const tx = await program.methods
+          .initializeAuthority()
+          .accounts({})
+          .rpc();
       })
-      .rpc();
-    // .prepare();
-    console.log("Your transaction signature", tx);
-  });
 
-  it("Create Position Proposal!", async () => {
+      it("Initialize Mint", async () => {
 
-    const [mockPoolStatePubkey] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("mock-pubkey")],
-      program.programId
-    )
-
-    const [proposalConfig] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("proposal-config")],
-      program.programId
-    )
-
-    const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("0"),
-        Buffer.from("position-proposal"),
-      ],
-      program.programId
-    )
-
-    const tx = await program.methods
-      .createPositionProposal(new anchor.BN(1_000_000_000))
-      .accountsPartial({
-        // member
-        // memeber treasury status
-        // pool state 
-        // position proposal
-        // proposal config
-        // sytem program
-        member: payer.publicKey,
-        poolState: mockPoolStatePubkey,
-        positionProposal,
-        proposalConfig,
+        const tx = await program.methods
+          .initializeMint()
+          .accounts({
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .rpc();
       })
-      .signers([payer])
-      .rpc();
-    console.log("Your transaction signature", tx);
-  });
+    })
 
-  // how this test is currently set up. it allows me to test the voting process 
-  // without worring about token issuance from launch vault
-  it("transfer tokens!", async () => {
-    const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("authority")],
-      program.programId
-    )
+    describe("Initialize Vaults", () => {
+      it("Initialize Ballot Vault", async () => {
 
-    const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        programAuthority.toBuffer(),
-        Buffer.from("dao-token-mint"),
-      ],
-      program.programId
-    )
-
-    const [vault] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        programAuthority.toBuffer(),
-        Buffer.from("launch-vault"),
-      ],
-      program.programId
-    )
-
-    const receipentATA = await getOrCreateAssociatedTokenAccount(
-      provider.connection, // connection
-      payer, // payer
-      programTokenMint, // mint
-      payer.publicKey,// owner
-    )
-
-    const tx = await program.methods
-      .transferTokens()
-      .accounts({
-        programAuthority,
-        vault: vault,
-        receipent: receipentATA.address,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        // tokenProgram: TOKEN_2022_PROGRAM_ID,
+        const tx = await program.methods
+          .initializeBallotVaults()
+          .accounts({
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .rpc();
       })
-      .rpc();
 
-    console.log("Your transaction signature", tx);
+      it("Initialize Tokens Vault", async () => {
 
-  });
-
-  it("Cast Vote", async () => {
-
-    const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("authority")],
-      program.programId
-    )
-
-    const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        programAuthority.toBuffer(),
-        Buffer.from("dao-token-mint"),
-      ],
-      program.programId
-    )
-
-    const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("0"),
-        Buffer.from("position-proposal"),
-      ],
-      program.programId
-    )
-
-    const [memberVoteStatus] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        payer.publicKey.toBuffer(),
-        positionProposal.toBuffer(),
-        Buffer.from("member-vote-status"),
-      ],
-      program.programId
-    )
-
-    const [tokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        programAuthority.toBuffer(),
-        Buffer.from("dao-token-mint"),
-      ],
-      program.programId
-    )
-
-    const [ballotVault] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        programAuthority.toBuffer(),
-        Buffer.from("ballot-vault"),
-      ],
-      program.programId
-    )
-
-    const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
-      provider.connection, // connection
-      payer, // payer
-      programTokenMint, // mint
-      payer.publicKey,// owner
-    )
-
-    const tx = await program.methods
-      .castVote(new anchor.BN(1), 1, true)
-      .accountsPartial({
-        member: payer.publicKey,
-        memberVoteStatus,
-        programAuthority,
-        tokenMint,
-        ballotVault,
-        positionProposal,
-        memberTokenAccount: memberTokenAccount.address,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SYSTEM_PROGRAM_ID,
+        const tx = await program.methods
+          .initializeTokenVaults()
+          .accounts({
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .rpc();
       })
-      .signers([payer])
-      .rpc();
 
-    console.log("Your transaction signature", tx);
+      it("Initialize Treasury Vault", async () => {
+
+        const tx = await program.methods
+          .initializeTreasuryVaults()
+          .accounts({
+            treasuryTokenMint: tokenMint.mint.publicKey,
+            treasuryTokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .rpc();
+      })
+    })
+
   })
-});
+
+
+
+})
+
+// it("Is initialized!", async () => {
+//   // need usdc token mint
+
+//   console.log(tokenMint.mint)
+
+//   const tx = await program.methods
+//     .initializeProgram()
+//     .accounts({
+//       usdcTokenMint: tokenMint.mint.publicKey,
+//       // tokenProgram: TOKEN_2022_PROGRAM_ID,
+
+//       // for testing, because can't figure out how to create ATA with TOKEN_2022_PROGRAM_ID,
+//       tokenProgram: TOKEN_PROGRAM_ID,
+
+//       usdcTokenProgram: TOKEN_PROGRAM_ID,
+//     })
+//     .rpc();
+//   // .prepare();
+//   console.log("Your transaction signature", tx);
+// });
+
+// it("Create Position Proposal!", async () => {
+
+//   const [mockPoolStatePubkey] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [Buffer.from("mock-pubkey")],
+//     program.programId
+//   )
+
+//   const [proposalConfig] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [Buffer.from("proposal-config")],
+//     program.programId
+//   )
+
+//   const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       Buffer.from("0"),
+//       Buffer.from("position-proposal"),
+//     ],
+//     program.programId
+//   )
+
+//   const tx = await program.methods
+//     .createPositionProposal(new anchor.BN(1_000_000_000))
+//     .accountsPartial({
+//       // member
+//       // memeber treasury status
+//       // pool state
+//       // position proposal
+//       // proposal config
+//       // sytem program
+//       member: payer.publicKey,
+//       poolState: mockPoolStatePubkey,
+//       positionProposal,
+//       proposalConfig,
+//     })
+//     .signers([payer])
+//     .rpc();
+//   console.log("Your transaction signature", tx);
+// });
+
+// // how this test is currently set up. it allows me to test the voting process
+// // without worring about token issuance from launch vault
+// it("transfer tokens!", async () => {
+//   const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [Buffer.from("authority")],
+//     program.programId
+//   )
+
+//   const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       programAuthority.toBuffer(),
+//       Buffer.from("dao-token-mint"),
+//     ],
+//     program.programId
+//   )
+
+//   const [vault] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       programAuthority.toBuffer(),
+//       Buffer.from("launch-vault"),
+//     ],
+//     program.programId
+//   )
+
+//   const receipentATA = await getOrCreateAssociatedTokenAccount(
+//     provider.connection, // connection
+//     payer, // payer
+//     programTokenMint, // mint
+//     payer.publicKey,// owner
+//   )
+
+//   const tx = await program.methods
+//     .transferTokens()
+//     .accounts({
+//       programAuthority,
+//       vault: vault,
+//       receipent: receipentATA.address,
+//       tokenProgram: TOKEN_PROGRAM_ID,
+//       // tokenProgram: TOKEN_2022_PROGRAM_ID,
+//     })
+//     .rpc();
+
+//   console.log("Your transaction signature", tx);
+
+// });
+
+// it("Cast Vote", async () => {
+
+//   const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [Buffer.from("authority")],
+//     program.programId
+//   )
+
+//   const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       programAuthority.toBuffer(),
+//       Buffer.from("dao-token-mint"),
+//     ],
+//     program.programId
+//   )
+
+//   const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       Buffer.from("0"),
+//       Buffer.from("position-proposal"),
+//     ],
+//     program.programId
+//   )
+
+//   const [memberVoteStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       payer.publicKey.toBuffer(),
+//       positionProposal.toBuffer(),
+//       Buffer.from("member-vote-status"),
+//     ],
+//     program.programId
+//   )
+
+//   const [tokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       programAuthority.toBuffer(),
+//       Buffer.from("dao-token-mint"),
+//     ],
+//     program.programId
+//   )
+
+//   const [ballotVault] = anchor.web3.PublicKey.findProgramAddressSync(
+//     [
+//       programAuthority.toBuffer(),
+//       Buffer.from("ballot-vault"),
+//     ],
+//     program.programId
+//   )
+
+//   const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+//     provider.connection, // connection
+//     payer, // payer
+//     programTokenMint, // mint
+//     payer.publicKey,// owner
+//   )
+
+//   const tx = await program.methods
+//     .castVote(new anchor.BN(1), 1, true)
+//     .accountsPartial({
+//       member: payer.publicKey,
+//       memberVoteStatus,
+//       programAuthority,
+//       tokenMint,
+//       ballotVault,
+//       positionProposal,
+//       memberTokenAccount: memberTokenAccount.address,
+//       tokenProgram: TOKEN_PROGRAM_ID,
+//       systemProgram: SYSTEM_PROGRAM_ID,
+//     })
+//     .signers([payer])
+//     .rpc();
+
+//   console.log("Your transaction signature", tx);
+// })

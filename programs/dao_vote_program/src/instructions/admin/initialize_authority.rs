@@ -9,7 +9,7 @@ pub struct InitializeAuthority<'info> {
     #[account(
         init,
         payer = payer,
-        space = ProgramAuthority::LEN,
+        space = ProgramAuthority::LEN + 100,
         seeds = [
             b"authority"
         ],
@@ -20,7 +20,7 @@ pub struct InitializeAuthority<'info> {
     #[account(
         init,
         payer = payer,
-        space = ProposalConfig::LEN,
+        space = ProposalConfig::LEN + 100,
         seeds = [
             b"proposal-config"
         ],

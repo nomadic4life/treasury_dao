@@ -7,6 +7,15 @@ pub struct ReallocZeroCopyTokens<'info> {
     pub payer: Signer<'info>,
 
     #[account(
+        seeds = [
+            b"token-status",
+        ],
+        bump
+    )]
+    // this is not updating state???? WHY????
+    pub allocation_tracker: Account<'info, AllocationTracker>,
+
+    #[account(
         mut,
         seeds = [
             program_authority.key().as_ref(),
@@ -24,13 +33,11 @@ pub struct ReallocZeroCopyTokens<'info> {
         bump,
     )]
     pub program_authority: SystemAccount<'info>,
-
-    pub allocation_tracker: Account<'info, AllocationTracker>,
 }
 
 impl<'info> ReallocZeroCopyTokens<'info> {
-    pub fn realloc(&mut self) -> Result<()> {
-        let space = self.allocation_tracker.increase();
+    pub fn realloc(&mut self, space: u32) -> Result<()> {
+        // let space = self.allocation_tracker.increase();
         self.token_status.realloc(space as usize, false)?;
 
         Ok(())

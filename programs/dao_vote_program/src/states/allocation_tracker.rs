@@ -14,7 +14,7 @@ impl AllocationTracker {
     // cutting cornings because really short on time.
     pub fn init(&mut self, seed: u8) {
         if seed != 0 {
-            self.seed = String::from("treasury-status");
+            self.seed = String::from("token-status");
         } else {
             self.seed = String::from("treasury-status");
         }
@@ -23,7 +23,7 @@ impl AllocationTracker {
     // cutting cornings because really short on time.
     pub fn get(seed: u8) -> String {
         let data = if seed != 0 {
-            String::from("treasury-status")
+            String::from("token-status")
         } else {
             String::from("treasury-status")
         };
@@ -36,7 +36,10 @@ impl AllocationTracker {
             return self.current;
         }
 
-        self.current += AllocationTracker::MAX_SPACE;
-        return self.current;
+        // self.current = self.current + AllocationTracker::MAX_SPACE;
+        let amount = self.current + 10240;
+        self.current = amount;
+
+        return self.current + 10240;
     }
 }

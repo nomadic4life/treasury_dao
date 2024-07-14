@@ -5,12 +5,12 @@ use anchor_lang::prelude::*;
 pub struct TokenStatus {
     pub current_round: [u8; 8],
     pub last_slot_update: [u8; 8],
-    pub fields: [u8; TokenStatus::LEN],
+    pub fields: [u8; TokenStatus::LEN - 10240],
 }
 
 impl TokenStatus {
     // add 32?
-    pub const LEN: usize = DISCRIMINATOR + (UNSIGNED_64 * 3) + (Field::LEN * 1000) + 8;
+    pub const LEN: usize = (10240 * 11) - (DISCRIMINATOR + (BYTE * 8) + (BYTE * 8));
 
     pub const MAX_SLOT_RANGE: u64 = 216_000;
 
