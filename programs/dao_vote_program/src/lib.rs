@@ -67,6 +67,10 @@ pub mod dao_vote_program {
         ctx.accounts.update()
     }
 
+    pub fn create_asset_status(ctx: Context<CreateAssetStatus>) -> Result<()> {
+        ctx.accounts.initialize(&ctx.bumps)
+    }
+
     pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
         ctx.accounts.swap()
     }
@@ -124,3 +128,11 @@ pub mod dao_vote_program {
 //      -> the amount of tokens will be owed to them that will come from the vault aspect
 //      -> that accumulates over time and the DAO member can claim their tokens as that vault fills
 //      -> DAO member can also buy the tokens to vote as well.
+
+// TODO! need add
+//  vaulation source
+//  zero copy -> treasury status, token status
+//  errors
+//  event logs
+//  improve the algo
+//  test cases

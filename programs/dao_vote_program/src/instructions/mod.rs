@@ -1,5 +1,5 @@
-pub mod initialize_program;
-pub use initialize_program::*;
+pub mod admin;
+pub use admin::*;
 
 // pub mod stake_token_vault;
 // pub use stake_token_vault::*;
@@ -15,6 +15,9 @@ pub use treasury::*;
 
 pub mod earn_token;
 pub use earn_token::*;
+
+pub mod asset;
+pub use asset::*;
 
 // pub mod mock;
 // pub use mock::*;
