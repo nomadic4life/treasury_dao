@@ -49,7 +49,7 @@ pub struct InitializeProgram<'info> {
     )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 
-    pub usdc_token_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub treasury_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         init,
@@ -74,8 +74,8 @@ pub struct InitializeProgram<'info> {
         ],
         bump,
         token::authority = program_authority,
-        token::mint = usdc_token_mint,
-        token::token_program = usdc_token_program,
+        token::mint = treasury_token_mint,
+        token::token_program = treasury_token_program,
     )]
     pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
@@ -137,7 +137,7 @@ pub struct InitializeProgram<'info> {
     // )]
     // pub token_vault_status: Box<Account<'info, TokenVaultStatus>>,
     pub token_program: Interface<'info, TokenInterface>,
-    pub usdc_token_program: Interface<'info, TokenInterface>,
+    pub treasury_token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
 
@@ -145,15 +145,17 @@ impl<'info> InitializeProgram<'info> {
     const MAX_SUPPLY: u64 = 10_000_000_000__000_000_000;
 
     pub fn init(&mut self, bumps: &InitializeProgramBumps) -> Result<()> {
-        self.program_authority.bump = bumps.program_authority;
-        self.program_authority.launch_vault_bump = bumps.launch_vault;
-        self.program_authority.treasury_vault_bump = bumps.treasury_vault;
-        self.program_authority.treasury_status_bump = bumps.treasury_status;
-        self.program_authority.token_mint_bump = bumps.token_mint;
-        self.program_authority.ballot_vault_bump = bumps.ballot_vault;
-        // self.program_authority.token_vault_bump = bumps.token_vault;
-        // self.program_authority.token_vault_status_bump = bumps.token_vault_status;
-
+        self.program_authority.init(
+            bumps.program_authority,
+            self.treasury_vault.key(),
+            self.ballot_vault.key(),
+            self.launch_vault.key(),
+            self.treasury_status.key(),
+            self.treasury_token_mint.key(),
+            self.token_mint.key(),
+            // self.token_vault.key(),
+            // self.token_status.key(),
+        );
         self.program_authority.token_mint = self.token_mint.key();
         self.program_authority.max_supply = InitializeProgram::MAX_SUPPLY;
 
