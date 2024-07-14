@@ -19,9 +19,9 @@ pub struct LaunchToken<'info> {
 
     #[account(
         address = program_authority.treasury_status,
-        constraint = treasury_status.is_valid_launch(),
+        constraint = treasury_status.load()?.is_valid_launch(),
     )]
-    pub treasury_status: Box<Account<'info, TreasuryStatus>>,
+    pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
     #[account(mut)]
     pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -39,11 +39,12 @@ pub struct LaunchToken<'info> {
 
 impl<'info> LaunchToken<'info> {
     pub fn claim(&mut self) -> Result<()> {
+        let treasury_status = &mut self.treasury_status.load_mut()?;
         let seeds = &[b"authority", &[self.program_authority.bump][..]];
         let signer_seeds = &[&seeds[..]];
 
         let round = 0;
-        let (valuation, _) = self.treasury_status.get_valuation_of_round(round);
+        let (valuation, _) = treasury_status.get_valuation_of_round(round);
         let balance = self.member_status.deposit_total;
 
         // could cause error if interger overflow for now this will work

@@ -11,11 +11,7 @@ pub struct TreasuryClaim<'info> {
 
     #[account(
         mut,
-        seeds = [
-            member.key().as_ref(),
-            b"member-status"
-        ],
-        bump,
+        constraint = member_status.authority == member.key(),
     )]
     pub member_status: Box<Account<'info, MemberTreasuryStatus>>,
 
@@ -24,7 +20,7 @@ pub struct TreasuryClaim<'info> {
         address = program_authority.treasury_status,
         // need to check if already claimed of the current round
     )]
-    pub treasury_status: Box<Account<'info, TreasuryStatus>>,
+    pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
     #[account(mut)]
     pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -49,8 +45,9 @@ pub struct TreasuryClaim<'info> {
 impl<'info> TreasuryClaim<'info> {
     // need to claim
     pub fn claim(&mut self) -> Result<()> {
-        let amount = self.member_status.claim(&self.treasury_status);
-        self.treasury_status.claim(amount)?;
+        let treasury_status = &mut self.treasury_status.load_mut()?;
+        let amount = self.member_status.claim(&treasury_status);
+        treasury_status.claim(amount)?;
 
         let seeds = &[b"authority", &[self.program_authority.bump][..]];
         let signer_seeds = &[&seeds[..]];

@@ -11,11 +11,7 @@ pub struct TreasuryDeposit<'info> {
 
     #[account(
         mut,
-        seeds = [
-            member.key().as_ref(),
-            b"member-status"
-        ],
-        bump,
+        constraint = member_status.authority == member.key(),
     )]
     pub member_status: Box<Account<'info, MemberTreasuryStatus>>,
 
@@ -23,7 +19,7 @@ pub struct TreasuryDeposit<'info> {
         mut,
         address = program_authority.treasury_status,
     )]
-    pub treasury_status: Box<Account<'info, TreasuryStatus>>,
+    pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
     #[account(mut)]
     pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -47,9 +43,10 @@ pub struct TreasuryDeposit<'info> {
 
 impl<'info> TreasuryDeposit<'info> {
     pub fn deposit(&mut self, amount: u64) -> Result<()> {
-        self.treasury_status.deposit(amount)?;
+        let treasury_status = &mut self.treasury_status.load_mut()?;
+        treasury_status.deposit(amount)?;
 
-        self.member_status.deposit(amount, &self.treasury_status);
+        self.member_status.deposit(amount, &treasury_status);
 
         transfer_checked(
             CpiContext::new(

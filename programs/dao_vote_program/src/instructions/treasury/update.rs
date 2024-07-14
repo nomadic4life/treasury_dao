@@ -11,11 +11,7 @@ pub struct TreasuryDeposit<'info> {
 
     #[account(
         mut,
-        seeds = [
-            member.key().as_ref(),
-            b"member-status"
-        ],
-        bump,
+        constraint = member_status.authority == member.key(),
     )]
     pub member_status: Box<Account<'info, MemberTreasuryStatus>>,
 
@@ -25,24 +21,7 @@ pub struct TreasuryDeposit<'info> {
     )]
     pub treasury_status: Box<Account<'info, TreasuryStatus>>,
 
-    #[account(mut)]
-    pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
-
-    #[account(
-        mut,
-        address = program_authority.treasury_vault,
-    )]
-    pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-
-    #[account(
-        mut,
-        address = program_authority.treasury_token_mint,
-    )]
-    pub token_mint: Box<InterfaceAccount<'info, Mint>>,
-
     pub program_authority: Box<Account<'info, ProgramAuthority>>,
-    pub token_program: Interface<'info, TokenInterface>,
-    pub system_program: Program<'info, System>,
 }
 
 impl<'info> TreasuryDeposit<'info> {

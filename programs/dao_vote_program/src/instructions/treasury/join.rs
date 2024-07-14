@@ -25,7 +25,7 @@ pub struct CreateMemberTreasuryStatus<'info> {
         mut,
         address = program_authority.treasury_status,
     )]
-    pub treasury_status: Box<Account<'info, TreasuryStatus>>,
+    pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
     #[account(mut)]
     pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -49,12 +49,13 @@ pub struct CreateMemberTreasuryStatus<'info> {
 
 impl<'info> CreateMemberTreasuryStatus<'info> {
     pub fn join(&mut self, amount: u64, bumps: &CreateMemberTreasuryStatusBumps) -> Result<()> {
+        let treasury_status = &mut self.treasury_status.load_mut()?;
         self.member_status
             .init(bumps.member_status, self.member.key());
 
-        self.treasury_status.deposit(amount)?;
+        treasury_status.deposit(amount)?;
 
-        self.member_status.deposit(amount, &self.treasury_status);
+        self.member_status.deposit(amount, &treasury_status);
 
         transfer_checked(
             CpiContext::new(
