@@ -81,6 +81,10 @@ impl TreasuryStatus {
         Ok(())
     }
 
+    pub fn is_valid_launch(&self) -> bool {
+        return self.current_round != 0;
+    }
+
     // next_round
     // pub fn update(&mut self, source: ValuationSourceStatus) -> Result<()> {
     //     let clock = Clock::get()?;

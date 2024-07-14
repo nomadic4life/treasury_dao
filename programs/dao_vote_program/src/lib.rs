@@ -17,15 +17,27 @@ pub mod dao_vote_program {
         ctx.accounts.init(&ctx.bumps)
     }
 
+    pub fn join_dao(ctx: Context<CreateMemberTreasuryStatus>, amount: u64) -> Result<()> {
+        ctx.accounts.join(amount, &ctx.bumps)
+    }
+
+    pub fn launch(ctx: Context<LaunchToken>) -> Result<()> {
+        ctx.accounts.claim()
+    }
+
+    pub fn treasury_deposit(ctx: Context<TreasuryDeposit>, amount: u64) -> Result<()> {
+        ctx.accounts.deposit(amount)
+    }
+
+    pub fn treasury_claim(ctx: Context<TreasuryClaim>) -> Result<()> {
+        ctx.accounts.claim()
+    }
+
     pub fn create_position_proposal(
         ctx: Context<CreatePositionProposal>,
         amount: u64,
     ) -> Result<()> {
         ctx.accounts.create_position_proposal(&ctx.bumps, amount)
-    }
-
-    pub fn transfer_tokens(ctx: Context<TransferTokens>) -> Result<()> {
-        ctx.accounts.transfer()
     }
 
     pub fn cast_vote(

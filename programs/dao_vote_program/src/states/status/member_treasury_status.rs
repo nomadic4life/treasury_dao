@@ -5,6 +5,7 @@ use anchor_lang::prelude::*;
 pub struct MemberTreasuryStatus {
     pub bump: u8,
     pub authority: Pubkey,
+    pub launch_member: bool,
     pub last_round: Option<u16>,
     pub deposit_total: u64,
     pub claim_total: u64,
@@ -20,6 +21,7 @@ impl MemberTreasuryStatus {
 
     pub fn init(&mut self, bump: u8, member: Pubkey) {
         self.bump = bump;
+        self.launch_member = false;
         self.authority = member;
         self.deposit_total = 0;
         self.claim_total = 0;
@@ -50,8 +52,15 @@ impl MemberTreasuryStatus {
         }
     }
 
-    pub fn claim(&mut self, amount: u64, treasury_status: &Account<TreasuryStatus>) {
+    // need to implement a process to only claim once a round
+    pub fn claim(&mut self, treasury_status: &Account<TreasuryStatus>) -> u64 {
         self.update(treasury_status);
+
+        let amount = if self.valuation * 10 / 5 >= 100_000_000 {
+            self.valuation * 10 / 5
+        } else {
+            self.valuation
+        };
 
         if amount <= self.claim_total {
             self.claim_total += amount;
@@ -62,6 +71,8 @@ impl MemberTreasuryStatus {
             // need think about it more
             self.valuation -= amount;
         }
+
+        return amount;
     }
 
     pub fn deposit(&mut self, amount: u64, treasury_status: &Account<TreasuryStatus>) {
@@ -95,6 +106,14 @@ impl MemberTreasuryStatus {
         let (starting_valuation, ending_valuation) = treasury_status.get_valuation_of_round(round);
         return ending_valuation / MemberTreasuryStatus::PERCENT_SHIFT
             * self.share(starting_valuation);
+    }
+
+    pub fn claim_launch_status(&mut self) {
+        self.launch_member = true;
+    }
+
+    pub fn is_valid_launch_member(&self) -> bool {
+        return !(self.last_round.is_some() && self.last_round.unwrap() == 1);
     }
 }
 

@@ -24,8 +24,7 @@ pub struct SwapInstructionBaseOut {
 #[derive(Clone, Debug, PartialEq)]
 pub enum AmmInstruction {
     SwapBaseIn(SwapInstructionBaseIn),
-
-    SwapBaseOut(SwapInstructionBaseOut),
+    // SwapBaseOut(SwapInstructionBaseOut),
 }
 
 impl AmmInstruction {
@@ -40,16 +39,15 @@ impl AmmInstruction {
                 buf.extend_from_slice(discriminator);
                 buf.extend_from_slice(&amount_in.to_le_bytes());
                 buf.extend_from_slice(&minimum_amount_out.to_le_bytes());
-            }
-            Self::SwapBaseOut(SwapInstructionBaseOut {
-                discriminator,
-                max_amount_in,
-                amount_out,
-            }) => {
-                buf.extend_from_slice(discriminator);
-                buf.extend_from_slice(&max_amount_in.to_le_bytes());
-                buf.extend_from_slice(&amount_out.to_le_bytes());
-            }
+            } // Self::SwapBaseOut(SwapInstructionBaseOut {
+              //     discriminator,
+              //     max_amount_in,
+              //     amount_out,
+              // }) => {
+              //     buf.extend_from_slice(discriminator);
+              //     buf.extend_from_slice(&max_amount_in.to_le_bytes());
+              //     buf.extend_from_slice(&amount_out.to_le_bytes());
+              // }
         }
         Ok(buf)
     }
