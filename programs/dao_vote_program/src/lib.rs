@@ -51,21 +51,21 @@ pub mod dao_vote_program {
         ctx.accounts.claim()
     }
 
-    // pub fn deposit_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
-    //     ctx.accounts.deposit(amount)
-    // }
+    pub fn initialize_token_member_status(ctx: Context<InitliazeMemberTokenStatus>) -> Result<()> {
+        ctx.accounts.initialize()
+    }
 
-    // pub fn withdraw_token_vault(ctx: Context<StakeTokenVault>, amount: u64) -> Result<()> {
-    //     ctx.accounts.withdraw(amount)
-    // }
+    pub fn deposit_token_vault(ctx: Context<LockTokens>, amount: u64) -> Result<()> {
+        ctx.accounts.lock(amount)
+    }
 
-    // pub fn update_token_vault(ctx: Context<StakeTokenVault>) -> Result<()> {
-    //     ctx.accounts.update()
-    // }
+    pub fn withdraw_token_vault(ctx: Context<ClaimTokens>, amount: u64) -> Result<()> {
+        ctx.accounts.claim(amount)
+    }
 
-    // pub fn deposit_treasury_vault(ctx: Context<StakeTreasuryVault>, amount: u64) -> Result<()> {
-    //     ctx.accounts.deposit(amount)
-    // }
+    pub fn update_token_vault(ctx: Context<UpdateTokenStatus>) -> Result<()> {
+        ctx.accounts.update()
+    }
 
     pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
         ctx.accounts.swap()

@@ -5,7 +5,7 @@ use anchor_spl::token_interface::{
 };
 
 #[derive(Accounts)]
-pub struct TreasuryClaim<'info> {
+pub struct TreasuryDeposit<'info> {
     #[account(mut)]
     pub member: Signer<'info>,
 
@@ -22,7 +22,6 @@ pub struct TreasuryClaim<'info> {
     #[account(
         mut,
         address = program_authority.treasury_status,
-        // need to check if already claimed of the current round
     )]
     pub treasury_status: Box<Account<'info, TreasuryStatus>>,
 
@@ -46,29 +45,11 @@ pub struct TreasuryClaim<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> TreasuryClaim<'info> {
-    // need to claim
-    pub fn claim(&mut self) -> Result<()> {
-        let amount = self.member_status.claim(&self.treasury_status);
-        self.treasury_status.claim(amount)?;
+impl<'info> TreasuryDeposit<'info> {
+    pub fn deposit(&mut self) -> Result<()> {
+        self.treasury_status.update()?;
 
-        let seeds = &[b"authority", &[self.program_authority.bump][..]];
-        let signer_seeds = &[&seeds[..]];
-
-        transfer_checked(
-            CpiContext::new_with_signer(
-                self.token_program.to_account_info(),
-                TransferChecked {
-                    from: self.treasury_vault.to_account_info(),
-                    to: self.member_token_account.to_account_info(),
-                    authority: self.program_authority.to_account_info(),
-                    mint: self.token_mint.to_account_info(),
-                },
-                signer_seeds,
-            ),
-            amount,
-            self.token_mint.decimals,
-        )?;
+        self.member_status.update(&self.treasury_status);
 
         Ok(())
     }

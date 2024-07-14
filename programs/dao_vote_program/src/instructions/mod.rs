@@ -13,5 +13,8 @@ pub use vote_pipeline::*;
 pub mod treasury;
 pub use treasury::*;
 
+pub mod earn_token;
+pub use earn_token::*;
+
 // pub mod mock;
 // pub use mock::*;

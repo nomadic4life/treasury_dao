@@ -4,11 +4,8 @@ pub use program_authority::*;
 pub mod status;
 pub use status::*;
 
-pub mod proposal_config;
-pub use proposal_config::*;
-
-pub mod simple_position_proposal;
-pub use simple_position_proposal::*;
+pub mod proposal;
+pub use proposal::*;
 
 // pub mod raydium_amm;
 // pub use raydium_amm::*;

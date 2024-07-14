@@ -2,13 +2,13 @@ use crate::constants::*;
 use anchor_lang::prelude::*;
 
 #[account]
-pub struct TokenVaultStatus {
+pub struct TokenStatus {
     pub current_round: u16,
     pub last_slot_update: u64,
     pub fields: Vec<Field>,
 }
 
-impl TokenVaultStatus {
+impl TokenStatus {
     pub const LEN: usize =
         DISCRIMINATOR + UNSIGNED_16 + UNSIGNED_64 + (UNSIGNED_32 + Field::LEN * u16::MAX as usize);
 
@@ -19,7 +19,7 @@ impl TokenVaultStatus {
         let slot = clock.slot;
 
         self.current_round = 0;
-        self.last_slot_update = slot % TokenVaultStatus::MAX_SLOT_RANGE;
+        self.last_slot_update = slot % TokenStatus::MAX_SLOT_RANGE;
         self.fields = Vec::<Field>::new();
 
         self.fields.push(Field {
@@ -74,7 +74,7 @@ impl TokenVaultStatus {
         let clock = Clock::get()?;
         let slot = clock.slot;
 
-        if (slot % TokenVaultStatus::MAX_SLOT_RANGE) < self.last_slot_update {
+        if (slot % TokenStatus::MAX_SLOT_RANGE) < self.last_slot_update {
             let Field {
                 deposit_total,
                 withdraw_total,
@@ -94,7 +94,7 @@ impl TokenVaultStatus {
             });
         }
 
-        self.last_slot_update = slot % TokenVaultStatus::MAX_SLOT_RANGE;
+        self.last_slot_update = slot % TokenStatus::MAX_SLOT_RANGE;
 
         Ok(())
     }
