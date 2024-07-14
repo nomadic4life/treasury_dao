@@ -31,8 +31,8 @@ impl ProgramAuthority {
         treasury_status: Pubkey,
         treasury_token_mint: Pubkey,
         token_mint: Pubkey,
-        // token_vault: Pubkey,
-        // token_status: Pubkey,
+        token_vault: Pubkey,
+        token_status: Pubkey,
     ) {
         self.bump = bump;
         self.treasury_vault = treasury_vault;
@@ -41,9 +41,9 @@ impl ProgramAuthority {
         self.launch_vault = launch_vault;
         self.ballot_vault = ballot_vault;
 
-        // self.token_status = token_status;
+        self.token_status = token_status;
 
-        // self.token_vault = token_vault;
+        self.token_vault = token_vault;
         self.treasury_token_mint = treasury_token_mint;
         self.token_mint = token_mint;
     }

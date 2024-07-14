@@ -5,13 +5,13 @@ use anchor_lang::prelude::*;
 #[account]
 pub struct MemberTokenStatus {
     pub authority: Pubkey,
-    pub last_round: Option<u16>,
+    pub last_round: Option<u64>,
     pub balance: u64,
 }
 
 impl MemberTokenStatus {
     pub const LEN: usize = DISCRIMINATOR + PUBKEY_BYTES + (BYTE + UNSIGNED_16) + UNSIGNED_64;
-    const MAX: u16 = 20;
+    const MAX: u64 = 20;
     const PERCENT_SHIFT: u64 = 100_00;
     const MEMBER_RATE: u64 = 80;
     const NON_MEMBER_RATE: u64 = 60;
@@ -22,11 +22,8 @@ impl MemberTokenStatus {
         self.last_round = None;
     }
 
-    // breaks after 200 years. because current_round is u16 but that is okay.
-    // enough time to make a solution to fix | reset current_round
-    // do to time constraints, this solution will work
-    pub fn update(&mut self, vault_status: &Account<TokenStatus>, is_treasury_member: bool) {
-        let target = vault_status.current_round;
+    pub fn update(&mut self, vault_status: &TokenStatus, is_treasury_member: bool) {
+        let target = u64::from_be_bytes(vault_status.current_round);
         let advance = if target - self.last_round.unwrap() <= MemberTokenStatus::MAX {
             1
         } else {
@@ -45,12 +42,7 @@ impl MemberTokenStatus {
         }
     }
 
-    pub fn withdraw(
-        &mut self,
-        amount: u64,
-        vault_status: &Account<TokenStatus>,
-        is_treasury_member: bool,
-    ) {
+    pub fn withdraw(&mut self, amount: u64, vault_status: &TokenStatus, is_treasury_member: bool) {
         self.update(vault_status, is_treasury_member);
 
         if amount <= self.balance {
@@ -58,15 +50,11 @@ impl MemberTokenStatus {
         }
     }
 
-    pub fn deposit(
-        &mut self,
-        amount: u64,
-        vault_status: &Account<TokenStatus>,
-        is_treasury_member: bool,
-    ) {
+    pub fn deposit(&mut self, amount: u64, vault_status: &TokenStatus, is_treasury_member: bool) {
         if self.last_round.is_none() {
+            let current_round = u64::from_be_bytes(vault_status.current_round);
             self.balance = amount;
-            self.last_round = Some(vault_status.current_round + 1);
+            self.last_round = Some(current_round + 1);
             return;
         }
 
@@ -89,20 +77,9 @@ impl MemberTokenStatus {
         return share;
     }
 
-    // using magic numbers -> need change that
-    pub fn value(
-        &self,
-        round: u16,
-        vault_status: &Account<TokenStatus>,
-        is_treasury_member: bool,
-    ) -> u64 {
+    pub fn value(&self, round: u64, vault_status: &TokenStatus, is_treasury_member: bool) -> u64 {
         let (starting_balance, ending_balance) = vault_status.get_balance_of_round(round);
         return ending_balance / MemberTokenStatus::PERCENT_SHIFT
             * self.share(starting_balance, is_treasury_member);
     }
 }
-
-// ENDPOINTS:
-//  - update
-//  - deposit
-//  - claim

@@ -7,6 +7,9 @@ pub use status::*;
 pub mod proposal;
 pub use proposal::*;
 
+pub mod asset;
+pub use asset::*;
+
 // pub mod raydium_amm;
 // pub use raydium_amm::*;
 

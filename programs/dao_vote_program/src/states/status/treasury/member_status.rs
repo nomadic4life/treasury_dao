@@ -6,7 +6,7 @@ pub struct MemberTreasuryStatus {
     pub bump: u8,
     pub authority: Pubkey,
     pub launch_member: bool,
-    pub last_round: Option<u16>,
+    pub last_round: Option<u64>,
     pub deposit_total: u64,
     pub claim_total: u64,
     pub valuation: u64,
@@ -14,7 +14,7 @@ pub struct MemberTreasuryStatus {
 
 impl MemberTreasuryStatus {
     pub const LEN: usize = DISCRIMINATOR + BYTE + UNSIGNED_16 + UNSIGNED_64 + BYTE;
-    const MAX: u16 = 20;
+    const MAX: u64 = 20;
     const PERCENT_SHIFT: u64 = 100_00;
     const MEMBER_RATE: u64 = 90;
     // const NON_MEMBER_RATE: u64 = 60;
@@ -29,11 +29,8 @@ impl MemberTreasuryStatus {
         self.last_round = None;
     }
 
-    // breaks after 200 years. because current_round is u16 but that is okay.
-    // enough time to make a solution to fix | reset current_round
-    // do to time constraints, this solution will work
-    pub fn update(&mut self, treasury_status: &Account<TreasuryStatus>) {
-        let target = treasury_status.current_round;
+    pub fn update(&mut self, treasury_status: &TreasuryStatus) {
+        let target = u64::from_be_bytes(treasury_status.current_round);
         let advance = if target - self.last_round.unwrap() <= MemberTreasuryStatus::MAX {
             1
         } else {
@@ -53,7 +50,7 @@ impl MemberTreasuryStatus {
     }
 
     // need to implement a process to only claim once a round
-    pub fn claim(&mut self, treasury_status: &Account<TreasuryStatus>) -> u64 {
+    pub fn claim(&mut self, treasury_status: &TreasuryStatus) -> u64 {
         self.update(treasury_status);
 
         let amount = if self.valuation * 10 / 5 >= 100_000_000 {
@@ -75,10 +72,11 @@ impl MemberTreasuryStatus {
         return amount;
     }
 
-    pub fn deposit(&mut self, amount: u64, treasury_status: &Account<TreasuryStatus>) {
+    pub fn deposit(&mut self, amount: u64, treasury_status: &TreasuryStatus) {
         if self.last_round.is_none() {
+            let current_round = u64::from_be_bytes(treasury_status.current_round);
             self.deposit_total = amount;
-            self.last_round = Some(treasury_status.current_round + 1);
+            self.last_round = Some(current_round + 1);
             return;
         }
 
@@ -101,8 +99,7 @@ impl MemberTreasuryStatus {
         return share;
     }
 
-    // using magic numbers -> need change that
-    pub fn value(&self, round: u16, treasury_status: &Account<TreasuryStatus>) -> u64 {
+    pub fn value(&self, round: u64, treasury_status: &TreasuryStatus) -> u64 {
         let (starting_valuation, ending_valuation) = treasury_status.get_valuation_of_round(round);
         return ending_valuation / MemberTreasuryStatus::PERCENT_SHIFT
             * self.share(starting_valuation);

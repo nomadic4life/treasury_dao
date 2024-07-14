@@ -1,11 +1,14 @@
 use crate::constants::*;
 use anchor_lang::prelude::*;
 
-#[account]
+#[account(zero_copy)]
 pub struct TreasuryStatus {
-    pub current_round: u16,
-    pub last_slot_update: u64,
-    pub table: Vec<Field>,
+    // pub current_round: u16,
+    // pub last_slot_update: u64,
+    // pub table: Vec<Field>,
+    pub current_round: [u8; 8],
+    pub last_slot_update: [u8; 8],
+    pub fields: [u8; TreasuryStatus::LEN],
 }
 
 impl TreasuryStatus {
@@ -14,15 +17,32 @@ impl TreasuryStatus {
 
     pub const MAX_SLOT_RANGE: u64 = 216_000 * 30;
 
+    pub fn next_index(&self) -> u64 {
+        let total = u64::from_be_bytes(self.current_round);
+        let index = total * Field::LEN as u64;
+        return index;
+    }
+
+    pub fn write(&mut self, field: &Field) -> Result<()> {
+        let index = field.round as usize;
+        let data = field.try_to_vec()?;
+        self.fields[index..(index + Field::LEN)].copy_from_slice(&data);
+        Ok(())
+    }
+
+    pub fn read(&self, index: usize) -> Field {
+        let data = &self.fields[index..(index + Field::LEN)];
+        Field::try_from_slice(data).unwrap()
+    }
+
     pub fn init(&mut self) -> Result<()> {
         let clock = Clock::get()?;
         let slot = clock.slot;
 
-        self.current_round = 0;
-        self.last_slot_update = slot % TreasuryStatus::MAX_SLOT_RANGE;
-        self.table = Vec::<Field>::new();
+        self.current_round = u64::to_be_bytes(0);
+        self.last_slot_update = u64::to_be_bytes(slot % TreasuryStatus::MAX_SLOT_RANGE);
 
-        self.table.push(Field {
+        let field = Field {
             round: 0,
             deposit_total: 0,
             claim_total: 0,
@@ -30,26 +50,28 @@ impl TreasuryStatus {
             ending_balance: 0,
             starting_valuation: 0,
             ending_valuation: 0,
-        });
+        };
+
+        self.write(&field);
 
         Ok(())
     }
 
-    pub fn get_valuation_of_round(&self, round: u16) -> (u64, u64) {
+    pub fn get_valuation_of_round(&self, round: u64) -> (u64, u64) {
         let Field {
             starting_valuation,
             ending_valuation,
             ..
-        } = self.table[round as usize];
+        } = self.read(round as usize);
         return (starting_valuation, ending_valuation);
     }
 
-    pub fn get_totals_of_round(&self, round: u16) -> (u64, u64) {
+    pub fn get_totals_of_round(&self, round: u64) -> (u64, u64) {
         let Field {
             deposit_total,
             claim_total,
             ..
-        } = self.table[round as usize];
+        } = self.read(round as usize);
         return (deposit_total, claim_total);
     }
 
@@ -59,11 +81,16 @@ impl TreasuryStatus {
         //     return;
         // }
 
-        self.table[self.current_round as usize].deposit_total += amount;
+        // self.update()?;
+
+        let current_round = u64::from_be_bytes(self.current_round);
+        let mut field = self.read(current_round as usize);
+        field.deposit_total += amount;
+
+        self.write(&field)?;
 
         // handled by source
         // self.last_slot_update = slot % TreasuryStatus::MAX_SLOT_RANGE;
-
         Ok(())
     }
 
@@ -73,7 +100,13 @@ impl TreasuryStatus {
         //     return;
         // }
 
-        self.table[self.current_round as usize].claim_total += amount;
+        // self.update()?;
+
+        let current_round = u64::from_be_bytes(self.current_round);
+        let mut field = self.read(current_round as usize);
+        field.claim_total += amount;
+
+        self.write(&field)?;
 
         // handled by source
         // self.last_slot_update = slot % TreasuryStatus::MAX_SLOT_RANGE;
@@ -82,7 +115,7 @@ impl TreasuryStatus {
     }
 
     pub fn is_valid_launch(&self) -> bool {
-        return self.current_round != 0;
+        return u64::from_be_bytes(self.current_round) != 0;
     }
 
     // next_round
