@@ -525,7 +525,7 @@ describe("dao_vote_program", () => {
 
       })
 
-      it("Initialize Mint", async () => {
+      it("Initialize DAO Mint", async () => {
 
         const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
           [Buffer.from("authority")],
@@ -717,8 +717,6 @@ describe("dao_vote_program", () => {
         ],
         program.programId
       )
-
-
 
       const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
         provider.connection, // connection

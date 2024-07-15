@@ -124,8 +124,8 @@ impl<'info> InitializeAuthority<'info> {
     pub fn init(&mut self, bump: u8) -> Result<()> {
         self.program_authority.init(
             bump,
-            self.ballot_vault.key(),
             self.treasury_vault.key(),
+            self.ballot_vault.key(),
             self.launch_vault.key(),
             self.token_vault.key(),
             self.token_program.key(),

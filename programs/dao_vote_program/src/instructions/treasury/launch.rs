@@ -10,6 +10,9 @@ pub struct LaunchToken<'info> {
     #[account(mut)]
     pub member: Signer<'info>,
 
+    #[account(mut)]
+    pub program_authority: Account<'info, ProgramAuthority>,
+
     #[account(
         mut,
         constraint = member_status.authority == member.key(),
@@ -33,14 +36,6 @@ pub struct LaunchToken<'info> {
     )]
     pub launch_vault: InterfaceAccount<'info, TokenAccount>,
 
-    #[account(
-        mut,
-        seeds = [
-            b"authority"
-        ],
-        bump,
-    )]
-    pub program_authority: Account<'info, ProgramAuthority>,
     pub token_mint: InterfaceAccount<'info, Mint>,
     pub token_program: Interface<'info, TokenInterface>,
 }
@@ -55,11 +50,11 @@ impl<'info> LaunchToken<'info> {
         let (valuation, _) = treasury_status.get_valuation_of_round(round);
         let balance = self.member_status.deposit_total;
 
-        // // could cause error if interger overflow for now this will work
-        // let share = balance * 100_00 / valuation;
+        // could cause error if interger overflow for now this will work
+        let share = balance * 100_00 / valuation;
 
-        // // could cause error if interger overflow for now this will work
-        // let amount = self.program_authority.max_supply * share / 100_00;
+        // could cause error if interger overflow for now this will work
+        let amount = self.program_authority.max_supply * share / 100_00;
 
         transfer_checked(
             CpiContext::new_with_signer(
@@ -73,7 +68,7 @@ impl<'info> LaunchToken<'info> {
                 signer_seeds,
             ),
             // amount,
-            100,
+            amount,
             self.token_mint.decimals,
         )?;
 

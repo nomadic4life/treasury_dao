@@ -1,5 +1,7 @@
 use crate::{constants::*, states::TreasuryStatus};
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::pubkey::PUBKEY_BYTES};
+
+pub const MEMBER_STATUS: &str = "member-status";
 
 #[account]
 pub struct MemberTreasuryStatus {
@@ -13,7 +15,9 @@ pub struct MemberTreasuryStatus {
 }
 
 impl MemberTreasuryStatus {
-    pub const LEN: usize = DISCRIMINATOR + BYTE + UNSIGNED_16 + UNSIGNED_64 + BYTE;
+    pub const LEN: usize =
+        DISCRIMINATOR + BYTE + PUBKEY_BYTES + BYTE + (BYTE + UNSIGNED_64) + UNSIGNED_64 * 3;
+
     const MAX: u64 = 20;
     const PERCENT_SHIFT: u64 = 100_00;
     const MEMBER_RATE: u64 = 90;

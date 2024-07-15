@@ -1,4 +1,4 @@
-use crate::states::{MemberTreasuryStatus, ProgramAuthority, TreasuryStatus};
+use crate::states::{MemberTreasuryStatus, ProgramAuthority, TreasuryStatus, MEMBER_STATUS};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
     transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked,
@@ -15,7 +15,7 @@ pub struct CreateMemberTreasuryStatus<'info> {
         space = MemberTreasuryStatus::LEN + 1000,
         seeds = [
             member.key().as_ref(),
-            b"member-status"
+            MEMBER_STATUS.as_bytes(),
         ],
         bump,
     )]
@@ -37,8 +37,7 @@ pub struct CreateMemberTreasuryStatus<'info> {
     pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
-        // mut,
-        // address = program_authority.treasury_token_mint,
+        address = program_authority.treasury_mint,
     )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 
@@ -50,6 +49,7 @@ pub struct CreateMemberTreasuryStatus<'info> {
 impl<'info> CreateMemberTreasuryStatus<'info> {
     pub fn join(&mut self, amount: u64, bumps: &CreateMemberTreasuryStatusBumps) -> Result<()> {
         let treasury_status = &mut self.treasury_status.load_mut()?;
+
         self.member_status
             .init(bumps.member_status, self.member.key());
 
@@ -70,6 +70,7 @@ impl<'info> CreateMemberTreasuryStatus<'info> {
             amount,
             self.token_mint.decimals,
         )?;
+
         Ok(())
     }
 }
