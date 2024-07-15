@@ -114,7 +114,7 @@ impl MemberTreasuryStatus {
     }
 
     pub fn is_valid_launch_member(&self) -> bool {
-        return !(self.last_round.is_some() && self.last_round.unwrap() == 1);
+        return self.last_round.is_some() && self.last_round.unwrap() == 1;
     }
 
     pub fn is_valid_member(&self) -> bool {

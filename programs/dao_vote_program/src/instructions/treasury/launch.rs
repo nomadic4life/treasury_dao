@@ -16,14 +16,19 @@ pub struct LaunchToken<'info> {
     #[account(
         mut,
         constraint = member_status.authority == member.key(),
-        // constraint = member_status.is_valid_launch_member(),
+        // ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.is_valid_launch_member(),
+        // ErrorCode::InvalidTreasuryMember,
+
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 
     #[account(
         mut,
         address = program_authority.treasury_status,
+        // ErrorCode::InvalidTreasuryStatus,
         // constraint = treasury_status.load()?.is_valid_launch(),
+        // ErrorCode::InvalidLaunch,
     )]
     pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
@@ -33,13 +38,21 @@ pub struct LaunchToken<'info> {
     #[account(
         mut,
         address = program_authority.launch_vault,
+        // ErrorCode::InvalidLaunchVault,
     )]
     pub launch_vault: InterfaceAccount<'info, TokenAccount>,
 
+    #[account(
+        mut,
+        address = program_authority.token_mint,
+        // ErrorCode::InvalidTokenMint,
+    )]
     pub token_mint: InterfaceAccount<'info, Mint>,
     pub token_program: Interface<'info, TokenInterface>,
 }
 
+// NOTE: needs validation that its ready to launch token
+// but for testing we are leaving out that validation
 impl<'info> LaunchToken<'info> {
     pub fn claim(&mut self) -> Result<()> {
         let treasury_status = &mut self.treasury_status.load_mut()?;
@@ -47,14 +60,12 @@ impl<'info> LaunchToken<'info> {
         let signer_seeds = &[&seeds[..]];
 
         let round = 0;
-        let (valuation, _) = treasury_status.get_valuation_of_round(round);
+        let (deposit_total, _) = treasury_status.get_totals_of_round(round);
+
+        // making some assumptions -> will come back to this to handle interger overflow
         let balance = self.member_status.deposit_total;
-
-        // could cause error if interger overflow for now this will work
-        let share = balance * 100_00 / valuation;
-
-        // could cause error if interger overflow for now this will work
-        let amount = self.program_authority.max_supply * share / 100_00;
+        let share = (balance * 100_00 / deposit_total) as u128;
+        let amount = (self.program_authority.max_supply as u128 * share / 100_00) as u64;
 
         transfer_checked(
             CpiContext::new_with_signer(
@@ -67,7 +78,6 @@ impl<'info> LaunchToken<'info> {
                 },
                 signer_seeds,
             ),
-            // amount,
             amount,
             self.token_mint.decimals,
         )?;

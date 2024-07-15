@@ -695,6 +695,7 @@ describe("dao_vote_program", () => {
   })
 
   describe("Launch Phase", () => {
+
     it("Join DAO", async () => {
 
       const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -753,92 +754,67 @@ describe("dao_vote_program", () => {
         .rpc();
     })
 
+    it("Launch Token -> Launch Members Claim", async () => {
 
-    // it("Launch Token -> Launch Members Claim", async () => {
+      const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("authority")],
+        program.programId
+      )
 
-    //   const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
-    //     [Buffer.from("authority")],
-    //     program.programId
-    //   )
+      const [treasuryStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          programAuthority.toBuffer(),
+          Buffer.from("treasury-status")
+        ],
+        program.programId
+      )
 
+      const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          programAuthority.toBuffer(),
+          Buffer.from("dao-token-mint")
+        ],
+        program.programId
+      )
 
+      const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        payer,
+        programTokenMint,
+        payer.publicKey,
+      )
 
-    //   const [treasuryStatus] = anchor.web3.PublicKey.findProgramAddressSync(
-    //     [
-    //       programAuthority.toBuffer(),
-    //       Buffer.from("treasury-status")
-    //     ],
-    //     program.programId
-    //   )
+      const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          payer.publicKey.toBuffer(),
+          Buffer.from("member-status")
+        ],
+        program.programId
+      )
 
-    //   const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
-    //     [
-    //       programAuthority.toBuffer(),
-    //       Buffer.from("dao-token-mint")
-    //     ],
-    //     program.programId
-    //   )
+      const [launchVault] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          programAuthority.toBuffer(),
+          Buffer.from("launch-vault")
+        ],
+        program.programId
+      )
 
-    //   const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
-    //     provider.connection, // connection
-    //     payer, // payer
-    //     // programTokenMint, // mint
-    //     tokenMint.mint.publicKey,
-    //     payer.publicKey,// owner
-    //   )
-
-    //   const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
-    //     [
-    //       payer.publicKey.toBuffer(),
-    //       Buffer.from("member-status")
-    //     ],
-    //     program.programId
-    //   )
-
-    //   const [launchVault] = anchor.web3.PublicKey.findProgramAddressSync(
-    //     [
-    //       programAuthority.toBuffer(),
-    //       Buffer.from("launch-vault")
-    //     ],
-    //     program.programId
-    //   )
-
-    //   console.log(launchVault)
-
-    //   const tx = await program.methods
-    //     .launch()
-    //     .accountsPartial({
-    //       member: payer.publicKey,
-    //       memberStatus,
-    //       treasuryStatus,
-    //       memberTokenAccount: memberTokenAccount.address,
-    //       launchVault,
-    //       tokenProgram: TOKEN_PROGRAM_ID,
-    //       programAuthority,
-    //       tokenMint: programTokenMint
-    //     })
-    //     .signers([payer])
-    //     .prepare()
-
-    //   console.log(tx.instruction)
-
-    //   await program.methods
-    //     .launch()
-    //     .accountsPartial({
-    //       member: payer.publicKey,
-    //       memberStatus,
-    //       treasuryStatus,
-    //       memberTokenAccount: memberTokenAccount.address,
-    //       launchVault,
-    //       tokenProgram: TOKEN_PROGRAM_ID,
-    //       programAuthority,
-    //       tokenMint: programTokenMint
-    //     })
-    //     .signers([payer])
-    //     .rpc();
-    // })
-
-
+      await program.methods
+        .launch()
+        .accountsPartial({
+          member: payer.publicKey,
+          memberStatus,
+          treasuryStatus,
+          memberTokenAccount: memberTokenAccount.address,
+          launchVault,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          programAuthority,
+          tokenMint: programTokenMint
+        })
+        .signers([payer])
+        .rpc();
+    })
 
   })
 
