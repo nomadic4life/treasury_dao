@@ -1,5 +1,5 @@
 pub mod proposal_config;
 pub use proposal_config::*;
 
-pub mod simple_position_proposal;
-pub use simple_position_proposal::*;
+pub mod position_proposal;
+pub use position_proposal::*;

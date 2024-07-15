@@ -1,4 +1,4 @@
-use crate::states::ProgramAuthority;
+use crate::states::{ProgramAuthority, BALLOT_VAULT_SEED};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
@@ -8,45 +8,26 @@ pub struct InitializeBallotVault<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        mut,
-        seeds = [
-            b"authority"
-        ],
-        bump,
-    )]
-    pub program_authority: Box<Account<'info, ProgramAuthority>>,
-
-    #[account(
         init,
         payer = payer,
         seeds = [
             program_authority.key().as_ref(),
-            b"ballot-vault"
+           BALLOT_VAULT_SEED.as_bytes()
         ],
         bump,
         token::authority = program_authority,
         token::mint = token_mint,
         token::token_program = token_program,
     )]
-    pub ballot_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub ballot_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        seeds = [
-            program_authority.key().as_ref(),
-            b"dao-token-mint",
-        ],
-        bump,
+        address = program_authority.token_mint,
+        // ErrorCode::InvalidTokenMint
     )]
-    pub token_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub token_mint: InterfaceAccount<'info, Mint>,
 
+    pub program_authority: Account<'info, ProgramAuthority>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
-}
-
-impl<'info> InitializeBallotVault<'info> {
-    pub fn init(&mut self) -> Result<()> {
-        self.program_authority.ballot_vault = self.ballot_vault.key();
-
-        Ok(())
-    }
 }

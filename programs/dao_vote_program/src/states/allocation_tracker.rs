@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::pubkey::PUBKEY_BYTES};
 
-use crate::constants::{DISCRIMINATOR, UNSIGNED_16};
+use crate::constants::{BYTE, DISCRIMINATOR, UNSIGNED_16};
 
 #[account]
 pub struct AllocationTracker {
@@ -12,12 +12,14 @@ pub struct AllocationTracker {
 }
 
 impl AllocationTracker {
-    pub const LEN: usize = DISCRIMINATOR + UNSIGNED_16 + UNSIGNED_16;
+    pub const LEN: usize =
+        DISCRIMINATOR + BYTE + PUBKEY_BYTES + PUBKEY_BYTES + UNSIGNED_16 + UNSIGNED_16;
     pub const MAX_SPACE: u64 = 10240;
     // const TREASURY_STATUS: str = "streasury-status";
     // const TOKEN_STATUS: str = "token-status";
 
     pub fn init(&mut self, status: StatusType, target_account: Pubkey, program_authority: Pubkey) {
+        self.status_type = status.clone();
         self.target_account = target_account;
         self.program_authority = program_authority;
 

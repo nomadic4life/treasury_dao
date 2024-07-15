@@ -7,12 +7,11 @@ pub const TREASURY_STATUS_SEED: &str = "treasury-status";
 pub struct TreasuryStatus {
     pub current_round: [u8; 8],
     pub last_slot_update: [u8; 8],
-    pub fields: [u8; TreasuryStatus::LEN - 10240],
+    pub fields: [u8; TreasuryStatus::LEN - BYTE * 24],
 }
 
 impl TreasuryStatus {
-    pub const LEN: usize = (10240 * 11) - (DISCRIMINATOR + (BYTE * 8) + (BYTE * 8));
-
+    pub const LEN: usize = 10240 * 10;
     pub const MAX_SLOT_RANGE: u64 = 216_000 * 30;
 
     pub fn next_index(&self) -> u64 {

@@ -7,13 +7,11 @@ pub const TOKEN_STATUS_SEED: &str = "token-status";
 pub struct TokenStatus {
     pub current_round: [u8; 8],
     pub last_slot_update: [u8; 8],
-    pub fields: [u8; TokenStatus::LEN - 10240],
+    pub fields: [u8; TokenStatus::LEN - BYTE * 24],
 }
 
 impl TokenStatus {
-    // add 32?
-    pub const LEN: usize = (10240 * 11) - (DISCRIMINATOR + (BYTE * 8) + (BYTE * 8));
-
+    pub const LEN: usize = 10240 * 10;
     pub const MAX_SLOT_RANGE: u64 = 216_000;
 
     pub fn next_index(&self) -> u64 {
@@ -143,8 +141,3 @@ pub struct Field {
 impl Field {
     pub const LEN: usize = UNSIGNED_64 * 5;
 }
-
-// ENDPOINTS:
-//  - update
-//  - deposit
-//  - claim

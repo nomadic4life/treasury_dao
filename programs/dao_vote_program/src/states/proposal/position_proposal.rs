@@ -2,6 +2,8 @@ use crate::constants::*;
 use anchor_lang::prelude::*;
 pub use anchor_lang::solana_program::pubkey::PUBKEY_BYTES;
 
+pub const POSITION_PROPOSAL_SEED: &str = "position-proposal";
+
 #[account]
 pub struct PositionProposal {
     pub bump: u8,

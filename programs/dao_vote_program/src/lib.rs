@@ -27,7 +27,7 @@ pub mod dao_vote_program {
         ctx.accounts.assign(&ctx.bumps, ctx.program_id.key())
     }
 
-    pub fn assign_zero_copy_tokens(ctx: Context<AssignZeroCopyTokens>) -> Result<()> {
+    pub fn assign_zero_copy_token(ctx: Context<AssignZeroCopyTokens>) -> Result<()> {
         ctx.accounts.assign(&ctx.bumps, ctx.program_id.key())
     }
 
@@ -47,28 +47,28 @@ pub mod dao_vote_program {
         ctx.accounts.init()
     }
 
-    pub fn initialize_treasury_vaults(ctx: Context<InitializeTreasuryVault>) -> Result<()> {
-        ctx.accounts.init()
+    pub fn initialize_treasury_vaults(_ctx: Context<InitializeTreasuryVault>) -> Result<()> {
+        Ok(())
     }
 
-    pub fn initialize_launch_vaults(ctx: Context<InitializeLaunchVault>) -> Result<()> {
-        ctx.accounts.init()
+    pub fn initialize_launch_vaults(_ctx: Context<InitializeLaunchVault>) -> Result<()> {
+        Ok(())
     }
 
-    pub fn initialize_ballot_vaults(ctx: Context<InitializeBallotVault>) -> Result<()> {
-        ctx.accounts.init()
+    pub fn initialize_ballot_vaults(_ctx: Context<InitializeBallotVault>) -> Result<()> {
+        Ok(())
     }
 
-    pub fn initialize_token_vaults(ctx: Context<InitializeTokenVault>) -> Result<()> {
-        ctx.accounts.init()
+    pub fn initialize_token_vaults(_ctx: Context<InitializeTokenVault>) -> Result<()> {
+        Ok(())
     }
 
-    pub fn initialize_mint(ctx: Context<InitializeMint>) -> Result<()> {
-        ctx.accounts.init()
+    pub fn initialize_mint(_ctx: Context<InitializeMint>) -> Result<()> {
+        Ok(())
     }
 
-    pub fn mint_tokens(ctx: Context<MintTokens>) -> Result<()> {
-        ctx.accounts.init()
+    pub fn mint_max_supply(ctx: Context<MintMaxSupply>) -> Result<()> {
+        ctx.accounts.mint()
     }
 
     pub fn initialize_authority(ctx: Context<InitializeAuthority>) -> Result<()> {

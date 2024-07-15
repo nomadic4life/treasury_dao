@@ -32,7 +32,7 @@ pub struct TreasuryDeposit<'info> {
 
     #[account(
         mut,
-        address = program_authority.treasury_token_mint,
+        address = program_authority.treasury_mint,
     )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 

@@ -1,4 +1,4 @@
-use crate::states::ProgramAuthority;
+use crate::states::{ProgramAuthority, TREASURY_VAULT_SEED};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
@@ -8,37 +8,26 @@ pub struct InitializeTreasuryVault<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        mut,
-        seeds = [
-            b"authority"
-        ],
-        bump,
-    )]
-    pub program_authority: Box<Account<'info, ProgramAuthority>>,
-
-    #[account(
         init,
         payer = payer,
         seeds = [
             program_authority.key().as_ref(),
-            b"treasury-vault"
+            TREASURY_VAULT_SEED.as_bytes(),
         ],
         bump,
         token::authority = program_authority,
-        token::mint = treasury_token_mint,
-        token::token_program = treasury_token_program,
+        token::mint = treasury_mint,
+        token::token_program = treasury_program,
     )]
-    pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub treasury_vault: InterfaceAccount<'info, TokenAccount>,
 
-    pub treasury_token_mint: Box<InterfaceAccount<'info, Mint>>,
-    pub treasury_token_program: Interface<'info, TokenInterface>,
+    #[account(
+        address = program_authority.treasury_mint,
+        // ErrorCode::InvalidTreasuryMint
+    )]
+    pub treasury_mint: InterfaceAccount<'info, Mint>,
+
+    pub treasury_program: Interface<'info, TokenInterface>,
+    pub program_authority: Account<'info, ProgramAuthority>,
     pub system_program: Program<'info, System>,
-}
-
-impl<'info> InitializeTreasuryVault<'info> {
-    pub fn init(&mut self) -> Result<()> {
-        self.program_authority.treasury_vault = self.treasury_vault.key();
-
-        Ok(())
-    }
 }
