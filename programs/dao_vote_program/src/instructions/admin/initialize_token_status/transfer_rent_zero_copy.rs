@@ -1,4 +1,6 @@
-use crate::states::{AllocationTracker, TokenStatus};
+use crate::states::{
+    AllocationTracker, StatusType, TokenStatus, AUTHORITY_SEED, TOKEN_STATUS_SEED,
+};
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
@@ -12,7 +14,7 @@ pub struct TransferRentZeroCopyTokens<'info> {
         payer = payer,
         space = AllocationTracker::LEN,
         seeds = [
-            b"token-status",
+            TOKEN_STATUS_SEED.as_bytes(),
         ],
         bump
     )]
@@ -22,7 +24,7 @@ pub struct TransferRentZeroCopyTokens<'info> {
         mut,
         seeds = [
             program_authority.key().as_ref(),
-            b"token-status"
+            TOKEN_STATUS_SEED.as_bytes(),
         ],
         bump,
     )]
@@ -30,20 +32,24 @@ pub struct TransferRentZeroCopyTokens<'info> {
 
     #[account(
         seeds = [
-            b"authority"
+            AUTHORITY_SEED.as_bytes(),
         ],
         bump,
     )]
     pub program_authority: SystemAccount<'info>,
+
     pub system_program: Program<'info, System>,
 }
 
 impl<'info> TransferRentZeroCopyTokens<'info> {
     pub fn transfer_rent(&mut self) -> Result<()> {
-        self.allocation_tracker.init(0);
+        self.allocation_tracker.init(
+            StatusType::TokenStatus,
+            self.token_status.key(),
+            self.program_authority.key(),
+        );
 
         let space = TokenStatus::LEN;
-
         let rent = Rent::get()?.minimum_balance(space.try_into().expect("overflow"));
 
         transfer(

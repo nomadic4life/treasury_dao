@@ -31,15 +31,12 @@ pub mod dao_vote_program {
         ctx.accounts.assign(&ctx.bumps, ctx.program_id.key())
     }
 
-    pub fn realloc_zero_copy_treasury(
-        ctx: Context<ReallocZeroCopyTreasury>,
-        space: u32,
-    ) -> Result<()> {
-        ctx.accounts.realloc(space)
+    pub fn realloc_zero_copy_treasury(ctx: Context<ReallocZeroCopyTreasury>) -> Result<()> {
+        ctx.accounts.realloc()
     }
 
-    pub fn realloc_zero_copy_tokens(ctx: Context<ReallocZeroCopyTokens>, space: u32) -> Result<()> {
-        ctx.accounts.realloc(space)
+    pub fn realloc_zero_copy_tokens(ctx: Context<ReallocZeroCopyTokens>) -> Result<()> {
+        ctx.accounts.realloc()
     }
 
     pub fn initialize_zero_copy_treasury(ctx: Context<InitializeZeroCopyTreasury>) -> Result<()> {

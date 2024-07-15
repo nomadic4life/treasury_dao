@@ -334,11 +334,23 @@ describe("dao_vote_program", () => {
     describe("Initialize Program", () => {
 
       it("Initialize Authority", async () => {
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
 
-        const tx = await program.methods
+
+        await program.methods
           .initializeAuthority()
           .accounts({})
           .rpc();
+
+        let data = await program.account.programAuthority.fetch(programAuthority)
+
+        console.log(" :: INIT AUTH ::", programAuthority)
+        console.log(data)
+
+
       })
 
       it("Initialize Mint", async () => {
@@ -369,15 +381,22 @@ describe("dao_vote_program", () => {
 
         await program.methods
           .initializeMint()
-          .accountsStrict({
-            payer: payer.publicKey,
-            programAuthority,
-            tokenMint: programTokenMint,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SYSTEM_PROGRAM_ID,
-          })
-          .signers([payer])
+          // .accountsStrict({
+          //   payer: payer.publicKey,
+          //   programAuthority,
+          //   tokenMint: programTokenMint,
+          //   tokenProgram: TOKEN_PROGRAM_ID,
+          //   systemProgram: SYSTEM_PROGRAM_ID,
+          // })
+          .accounts({})
+          // .signers([payer])
           .rpc();
+
+        let data = await program.account.programAuthority.fetch(programAuthority)
+
+        console.log(" :: INIT mint ::", programAuthority)
+        console.log(data)
+
 
       })
 

@@ -1,3 +1,4 @@
+use crate::states::{AllocationTracker, StatusType, TREASURY_STATUS_SEED};
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{allocate, assign, Allocate, Assign};
 
@@ -8,19 +9,24 @@ pub struct AssignZeroCopyTreasury<'info> {
 
     #[account(
         mut,
+        constraint = allocation_tracker.status_type == StatusType::TreasuryStatus,
+        // ErrorCode::InvalidAllocationTracker
+    )]
+    pub allocation_tracker: Account<'info, AllocationTracker>,
+
+    #[account(
+        mut,
         seeds = [
             program_authority.key().as_ref(),
-            b"treasury-status"
+            TREASURY_STATUS_SEED.as_bytes(),
         ],
         bump,
     )]
     pub treasury_status: SystemAccount<'info>,
 
     #[account(
-        seeds = [
-            b"authority"
-        ],
-        bump,
+        address = allocation_tracker.program_authority,
+        // ErrorCode::InvalidProgramAuthorityAccount
     )]
     pub program_authority: SystemAccount<'info>,
 
@@ -28,16 +34,15 @@ pub struct AssignZeroCopyTreasury<'info> {
 }
 
 impl<'info> AssignZeroCopyTreasury<'info> {
-    const MAX_SPACE: u64 = 10240;
-
     pub fn assign(
         &mut self,
         bumps: &AssignZeroCopyTreasuryBumps,
         program_id: Pubkey,
     ) -> Result<()> {
+        let space = self.allocation_tracker.increase();
         let seeds = &[
             self.program_authority.key.as_ref(),
-            b"treasury-status",
+            TREASURY_STATUS_SEED.as_bytes(),
             &[bumps.treasury_status][..],
         ];
         let signer_seeds = &[&seeds[..]];
@@ -50,7 +55,7 @@ impl<'info> AssignZeroCopyTreasury<'info> {
                 },
                 signer_seeds,
             ),
-            AssignZeroCopyTreasury::MAX_SPACE,
+            space,
         )?;
 
         assign(

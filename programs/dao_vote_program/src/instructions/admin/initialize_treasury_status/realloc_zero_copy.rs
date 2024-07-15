@@ -1,4 +1,4 @@
-use crate::states::AllocationTracker;
+use crate::states::{AllocationTracker, StatusType};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -7,38 +7,33 @@ pub struct ReallocZeroCopyTreasury<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        seeds = [
-            b"treasury-status",
-        ],
-        bump
+        mut,
+        constraint = allocation_tracker.status_type == StatusType::TreasuryStatus,
+        // ErrorCode::InvalidAllocationTracker
     )]
-    // this is not updating state???? WHY????
     pub allocation_tracker: Account<'info, AllocationTracker>,
 
     #[account(
         mut,
-        seeds = [
-            program_authority.key().as_ref(),
-            b"treasury-status"
-        ],
-        bump,
+        address = allocation_tracker.target_account,
+        // ErrorCode::InvalidTreasuryStatusAccount
     )]
     /// CHECKED: reacllocate treasury status
     pub treasury_status: AccountInfo<'info>,
 
     #[account(
-        seeds = [
-            b"authority"
-        ],
-        bump,
+        address = allocation_tracker.program_authority,
+        // ErrorCode::InvalidProgramAuthorityAccount
+
     )]
     pub program_authority: SystemAccount<'info>,
 }
 
 impl<'info> ReallocZeroCopyTreasury<'info> {
-    pub fn realloc(&mut self, space: u32) -> Result<()> {
-        // let space = self.allocation_tracker.increase();
+    pub fn realloc(&mut self) -> Result<()> {
+        let space = self.allocation_tracker.increase();
         self.treasury_status.realloc(space as usize, false)?;
+        // emit log -> total space allocated
 
         Ok(())
     }

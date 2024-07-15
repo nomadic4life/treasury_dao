@@ -1,4 +1,4 @@
-use crate::states::TokenStatus;
+use crate::states::{TokenStatus, AUTHORITY_SEED, TOKEN_STATUS_SEED};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -10,7 +10,7 @@ pub struct InitializeZeroCopyTokens<'info> {
         zero,
         seeds = [
             program_authority.key().as_ref(),
-            b"token-status"
+            TOKEN_STATUS_SEED.as_bytes()
         ],
         bump,
     )]
@@ -18,7 +18,7 @@ pub struct InitializeZeroCopyTokens<'info> {
 
     #[account(
         seeds = [
-            b"authority"
+            AUTHORITY_SEED.as_bytes(),
         ],
         bump,
     )]
@@ -28,6 +28,9 @@ pub struct InitializeZeroCopyTokens<'info> {
 impl<'info> InitializeZeroCopyTokens<'info> {
     pub fn init(&mut self) -> Result<()> {
         self.token_status.load_init()?;
+        // should store the bump
+        // store the account on the program auhtority
+        // emit log
 
         Ok(())
     }

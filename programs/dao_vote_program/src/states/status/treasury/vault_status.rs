@@ -1,6 +1,8 @@
 use crate::constants::*;
 use anchor_lang::prelude::*;
 
+pub const TREASURY_STATUS_SEED: &str = "treasury-status";
+
 #[account(zero_copy)]
 pub struct TreasuryStatus {
     pub current_round: [u8; 8],

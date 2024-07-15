@@ -1,4 +1,4 @@
-use crate::states::AllocationTracker;
+use crate::states::{AllocationTracker, StatusType};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -7,38 +7,32 @@ pub struct ReallocZeroCopyTokens<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        seeds = [
-            b"token-status",
-        ],
-        bump
+        mut,
+        constraint = allocation_tracker.status_type == StatusType::TokenStatus,
+        // ErrorCode::InvalidAllocationTracker
     )]
-    // this is not updating state???? WHY????
     pub allocation_tracker: Account<'info, AllocationTracker>,
 
     #[account(
         mut,
-        seeds = [
-            program_authority.key().as_ref(),
-            b"token-status"
-        ],
-        bump,
+        address = allocation_tracker.target_account,
+        // ErrorCode::InvalidTokenStatusAccount
     )]
     /// CHECKED: reacllocate token status
     pub token_status: AccountInfo<'info>,
 
     #[account(
-        seeds = [
-            b"authority"
-        ],
-        bump,
+        address = allocation_tracker.program_authority,
+        // ErrorCode::InvalidProgramAuthorityAccount
     )]
     pub program_authority: SystemAccount<'info>,
 }
 
 impl<'info> ReallocZeroCopyTokens<'info> {
-    pub fn realloc(&mut self, space: u32) -> Result<()> {
-        // let space = self.allocation_tracker.increase();
+    pub fn realloc(&mut self) -> Result<()> {
+        let space = self.allocation_tracker.increase();
         self.token_status.realloc(space as usize, false)?;
+        // emit log -> total space allocated
 
         Ok(())
     }

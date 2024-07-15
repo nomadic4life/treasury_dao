@@ -1,6 +1,8 @@
 use crate::constants::*;
 use anchor_lang::prelude::*;
 
+pub const TOKEN_STATUS_SEED: &str = "token-status";
+
 #[account(zero_copy)]
 pub struct TokenStatus {
     pub current_round: [u8; 8],

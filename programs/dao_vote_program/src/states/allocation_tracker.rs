@@ -1,45 +1,54 @@
 use anchor_lang::prelude::*;
 
+use crate::constants::{DISCRIMINATOR, UNSIGNED_16};
+
 #[account]
 pub struct AllocationTracker {
-    pub seed: String,
-    pub current: u64,
+    pub status_type: StatusType,
+    pub program_authority: Pubkey,
+    pub target_account: Pubkey,
+    pub current: u16,
+    pub target: u16,
 }
 
 impl AllocationTracker {
-    pub const LEN: usize = 50;
+    pub const LEN: usize = DISCRIMINATOR + UNSIGNED_16 + UNSIGNED_16;
     pub const MAX_SPACE: u64 = 10240;
-    pub const TARGET: u64 = 10240 * 50;
+    // const TREASURY_STATUS: str = "streasury-status";
+    // const TOKEN_STATUS: str = "token-status";
 
-    // cutting cornings because really short on time.
-    pub fn init(&mut self, seed: u8) {
-        if seed != 0 {
-            self.seed = String::from("token-status");
-        } else {
-            self.seed = String::from("treasury-status");
-        }
+    pub fn init(&mut self, status: StatusType, target_account: Pubkey, program_authority: Pubkey) {
+        self.target_account = target_account;
+        self.program_authority = program_authority;
+
+        match status {
+            StatusType::TreasuryStatus => {
+                self.target = 20;
+            }
+            StatusType::TokenStatus => {
+                self.target = 20;
+            }
+        };
     }
 
-    // cutting cornings because really short on time.
-    pub fn get(seed: u8) -> String {
-        let data = if seed != 0 {
-            String::from("token-status")
-        } else {
-            String::from("treasury-status")
-        };
-
-        return data;
+    pub fn get(status: StatusType) -> String {
+        match status {
+            StatusType::TreasuryStatus => String::from("treasury-status"),
+            StatusType::TokenStatus => String::from("token-status"),
+        }
     }
 
     pub fn increase(&mut self) -> u64 {
-        if self.current >= AllocationTracker::TARGET {
-            return self.current;
+        if self.current < self.target {
+            self.current += 1;
         }
 
-        // self.current = self.current + AllocationTracker::MAX_SPACE;
-        let amount = self.current + 10240;
-        self.current = amount;
-
-        return self.current + 10240;
+        return self.current as u64 * AllocationTracker::MAX_SPACE;
     }
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize, Clone, PartialEq)]
+pub enum StatusType {
+    TreasuryStatus,
+    TokenStatus,
 }

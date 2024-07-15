@@ -1,4 +1,4 @@
-use crate::states::TreasuryStatus;
+use crate::states::{TreasuryStatus, AUTHORITY_SEED, TREASURY_STATUS_SEED};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -10,7 +10,7 @@ pub struct InitializeZeroCopyTreasury<'info> {
         zero,
         seeds = [
             program_authority.key().as_ref(),
-            b"treasury-status"
+           TREASURY_STATUS_SEED.as_bytes()
         ],
         bump,
     )]
@@ -18,7 +18,7 @@ pub struct InitializeZeroCopyTreasury<'info> {
 
     #[account(
         seeds = [
-            b"authority"
+           AUTHORITY_SEED.as_bytes(),
         ],
         bump,
     )]
@@ -28,6 +28,10 @@ pub struct InitializeZeroCopyTreasury<'info> {
 impl<'info> InitializeZeroCopyTreasury<'info> {
     pub fn init(&mut self) -> Result<()> {
         self.treasury_status.load_init()?;
+        // should store the bump
+        // store the account on the program auhtority
+        // emit log
+
         Ok(())
     }
 }

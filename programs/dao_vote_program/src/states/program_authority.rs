@@ -2,6 +2,7 @@ use crate::constants::*;
 use anchor_lang::prelude::*;
 pub use anchor_lang::solana_program::pubkey::PUBKEY_BYTES;
 
+pub const AUTHORITY_SEED: &str = "authority";
 #[account]
 pub struct ProgramAuthority {
     pub bump: u8,

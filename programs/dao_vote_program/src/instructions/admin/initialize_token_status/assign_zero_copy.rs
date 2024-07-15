@@ -1,3 +1,4 @@
+use crate::states::{AllocationTracker, StatusType, TOKEN_STATUS_SEED};
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{allocate, assign, Allocate, Assign};
 
@@ -8,19 +9,24 @@ pub struct AssignZeroCopyTokens<'info> {
 
     #[account(
         mut,
+        constraint = allocation_tracker.status_type == StatusType::TokenStatus,
+        // ErrorCode::InvalidAllocationTracker
+    )]
+    pub allocation_tracker: Account<'info, AllocationTracker>,
+
+    #[account(
+        mut,
         seeds = [
             program_authority.key().as_ref(),
-            b"token-status"
+            TOKEN_STATUS_SEED.as_bytes(),
         ],
         bump,
     )]
     pub token_status: SystemAccount<'info>,
 
     #[account(
-        seeds = [
-            b"authority"
-        ],
-        bump,
+        address = allocation_tracker.program_authority,
+        // ErrorCode::InvalidProgramAuthorityAccount
     )]
     pub program_authority: SystemAccount<'info>,
 
@@ -28,12 +34,11 @@ pub struct AssignZeroCopyTokens<'info> {
 }
 
 impl<'info> AssignZeroCopyTokens<'info> {
-    const MAX_SPACE: u64 = 10240;
-
     pub fn assign(&mut self, bumps: &AssignZeroCopyTokensBumps, program_id: Pubkey) -> Result<()> {
+        let space = self.allocation_tracker.increase();
         let seeds = &[
             self.program_authority.key.as_ref(),
-            b"token-status",
+            TOKEN_STATUS_SEED.as_bytes(),
             &[bumps.token_status][..],
         ];
         let signer_seeds = &[&seeds[..]];
@@ -46,7 +51,7 @@ impl<'info> AssignZeroCopyTokens<'info> {
                 },
                 signer_seeds,
             ),
-            AssignZeroCopyTokens::MAX_SPACE,
+            space,
         )?;
 
         assign(
