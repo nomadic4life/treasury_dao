@@ -2,8 +2,9 @@ use crate::constants::*;
 use anchor_lang::prelude::*;
 pub use anchor_lang::solana_program::pubkey::PUBKEY_BYTES;
 
-#[account]
+pub const ASSET_STATUS_SEED: &str = "asset-status";
 
+#[account]
 pub struct AssetVaultStatus {
     pub bump: u8,
     pub token_mint: Pubkey,

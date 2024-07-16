@@ -26,12 +26,13 @@ pub struct ProgramAuthority {
     pub token_status: Pubkey,
 
     pub proposal_config: Pubkey,
+    pub asset_config: Pubkey,
 
     pub max_supply: u64,
 }
 
 impl ProgramAuthority {
-    pub const LEN: usize = DISCRIMINATOR + BYTE + (PUBKEY_BYTES * 10) + UNSIGNED_64;
+    pub const LEN: usize = DISCRIMINATOR + BYTE + (PUBKEY_BYTES * 11) + UNSIGNED_64;
     pub const MAX_SUPPLY: u64 = 100_000_000_000__000_000;
 
     pub fn init(
@@ -50,7 +51,9 @@ impl ProgramAuthority {
 
         treasury_status: Pubkey,
         token_status: Pubkey,
+
         proposal_config: Pubkey,
+        asset_config: Pubkey,
     ) {
         self.bump = bump;
 
@@ -66,6 +69,8 @@ impl ProgramAuthority {
 
         self.treasury_status = treasury_status;
         self.token_status = token_status;
+
         self.proposal_config = proposal_config;
+        self.asset_config = asset_config;
     }
 }

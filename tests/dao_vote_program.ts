@@ -1012,6 +1012,45 @@ describe("dao_vote_program", () => {
           .rpc()
       })
 
+      it("Create Asset Status & Indexer & Vault", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [assetIndexer] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("0"),
+            Buffer.from("asset-indexer")
+          ],
+          program.programId
+        )
+
+        const [assetConfig] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("asset-config")
+          ],
+          program.programId
+        )
+
+        await program.methods.createAssetStatus()
+          .accountsPartial({
+            payer: payer.publicKey,
+            // assetVault?
+            // assetStatus?
+            assetIndexer,
+            assetConfig,
+            programAuthority,
+            assetMint: tokenMint.mint.publicKey,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            // systemProgram?
+          })
+          .signers([payer])
+          .rpc()
+
+      })
+
     })
   })
 

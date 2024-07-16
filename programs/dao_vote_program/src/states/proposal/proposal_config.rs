@@ -1,7 +1,7 @@
 use crate::constants::*;
 use anchor_lang::prelude::*;
 
-pub const PROPOSAL_CONFIG: &str = "proposal-config";
+pub const PROPOSAL_CONFIG_SEED: &str = "proposal-config";
 
 #[account]
 pub struct ProposalConfig {

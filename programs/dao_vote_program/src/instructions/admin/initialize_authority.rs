@@ -1,12 +1,14 @@
 use crate::states::{
+    AssetConfig,
     // STATES
     ProgramAuthority,
     ProposalConfig,
+    ASSET_CONFIG_SEED,
     AUTHORITY_SEED,
     BALLOT_VAULT_SEED,
     DAO_TOKEN_MINT_SEED,
     LAUNCH_VAULT_SEED,
-    PROPOSAL_CONFIG,
+    PROPOSAL_CONFIG_SEED,
     TOKEN_STATUS_SEED,
     TOKEN_VAULT_SEED,
     TREASURY_STATUS_SEED,
@@ -28,18 +30,29 @@ pub struct InitializeAuthority<'info> {
         ],
         bump,
     )]
-    pub program_authority: Account<'info, ProgramAuthority>,
+    pub program_authority: Box<Account<'info, ProgramAuthority>>,
 
     #[account(
         init,
         payer = payer,
         space = ProposalConfig::LEN,
         seeds = [
-            PROPOSAL_CONFIG.as_bytes(),
+            PROPOSAL_CONFIG_SEED.as_bytes(),
         ],
         bump,
     )]
     pub proposal_config: Account<'info, ProposalConfig>,
+
+    #[account(
+        init,
+        payer = payer,
+        space = AssetConfig::LEN,
+        seeds = [
+            ASSET_CONFIG_SEED.as_bytes(),
+        ],
+        bump,
+    )]
+    pub asset_config: Account<'info, AssetConfig>,
 
     #[account(
         seeds = [
@@ -134,6 +147,7 @@ impl<'info> InitializeAuthority<'info> {
             self.treasury_status.key(),
             self.token_status.key(),
             self.proposal_config.key(),
+            self.asset_config.key(),
         );
 
         Ok(())

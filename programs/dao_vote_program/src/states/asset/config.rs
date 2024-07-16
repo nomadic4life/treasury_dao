@@ -1,6 +1,9 @@
 use crate::constants::*;
 use anchor_lang::prelude::*;
 
+pub const ASSET_CONFIG_SEED: &str = "asset-config";
+pub const ASSET_VAULT_SEED: &str = "asset-vault";
+
 #[account]
 pub struct AssetConfig {
     pub bump: u8,
@@ -16,7 +19,7 @@ pub struct AssetConfig {
 }
 
 impl AssetConfig {
-    pub const LEN: usize = DISCRIMINATOR + BYTE + UNSIGNED_64 * 4;
+    pub const LEN: usize = DISCRIMINATOR + BYTE + UNSIGNED_64 * 5;
 
     // right now just returns the current index
     // but in future it will return the next avialable index

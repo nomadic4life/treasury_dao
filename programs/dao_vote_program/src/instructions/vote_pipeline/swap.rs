@@ -71,6 +71,7 @@ pub struct Swap<'info> {
 // using raydium
 impl<'info> Swap<'info> {
     pub fn swap(&mut self) -> Result<()> {
+        // need to handle this better
         let raydium_program_id = "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C".as_bytes();
 
         let amm_program = Pubkey::new_from_array(

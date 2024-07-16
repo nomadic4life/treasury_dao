@@ -2,6 +2,8 @@ use crate::constants::*;
 use anchor_lang::prelude::*;
 pub use anchor_lang::solana_program::pubkey::PUBKEY_BYTES;
 
+pub const ASSET_INDEXER_SEED: &str = "asset-indexer";
+
 #[account]
 pub struct AssetIndexer {
     pub bump: u8,

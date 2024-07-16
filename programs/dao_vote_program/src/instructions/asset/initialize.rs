@@ -1,4 +1,13 @@
-use crate::states::{AssetConfig, AssetIndexer, AssetVaultStatus, ProgramAuthority};
+use crate::states::{
+    // STATE
+    AssetConfig,
+    AssetIndexer,
+    AssetVaultStatus,
+    ProgramAuthority,
+    ASSET_INDEXER_SEED,
+    ASSET_STATUS_SEED,
+    ASSET_VAULT_SEED,
+};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
@@ -11,12 +20,12 @@ pub struct CreateAssetStatus<'info> {
         init,
         payer = payer,
         seeds = [
-            token_mint.key().as_ref(),
-            b"asset-vault"
+            asset_mint.key().as_ref(),
+            ASSET_VAULT_SEED.as_bytes(),
         ],
         bump,
         token::authority = program_authority,
-        token::mint = token_mint,
+        token::mint = asset_mint,
         token::token_program = token_program,
     )]
     pub asset_vault: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -27,11 +36,11 @@ pub struct CreateAssetStatus<'info> {
         space = AssetVaultStatus::LEN,
         seeds = [
             asset_vault.key().as_ref(),
-            b"asset-status"
+            ASSET_STATUS_SEED.as_bytes(),
         ],
         bump,
     )]
-    pub asset_status: Account<'info, AssetVaultStatus>,
+    pub asset_status: Box<Account<'info, AssetVaultStatus>>,
 
     #[account(
         init,
@@ -40,8 +49,8 @@ pub struct CreateAssetStatus<'info> {
         seeds = [
             // will change this to get the proper value
             // right now this allows for easy testing
-            asset_config.next_index().to_string().as_bytes(),
-            b"asset-indexer",
+            asset_config.current_index.to_string().as_bytes(),
+            ASSET_INDEXER_SEED.as_bytes(),
         ],
         bump,
         // currently this is taking place with creation of the asset status
@@ -49,20 +58,26 @@ pub struct CreateAssetStatus<'info> {
         // to keep track of that information, then the init of asset_indexer
         // can take place in its own instruction
     )]
-    pub asset_indexer: Account<'info, AssetIndexer>,
+    pub asset_indexer: Box<Account<'info, AssetIndexer>>,
 
-    #[account(mut)]
-    pub asset_config: Account<'info, AssetConfig>,
+    #[account(
+        mut,
+        address = program_authority.asset_config,
+        // ErrorCode::InvalidConfig
+    )]
+    pub asset_config: Box<Account<'info, AssetConfig>>,
 
     // should have validations from pool state -> but for now
     // this will work
-    pub token_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub asset_mint: Box<InterfaceAccount<'info, Mint>>,
 
     pub program_authority: Box<Account<'info, ProgramAuthority>>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
 
+// NOTE: should add validation for only create asset status if proposal has passed
+// for now this allows for easy testing
 impl<'info> CreateAssetStatus<'info> {
     pub fn initialize(&mut self, bumps: &CreateAssetStatusBumps) -> Result<()> {
         let slot = Clock::get()?.slot;
@@ -75,7 +90,7 @@ impl<'info> CreateAssetStatus<'info> {
 
         self.asset_status.init(
             bumps.asset_status,
-            self.token_mint.key(),
+            self.asset_mint.key(),
             self.asset_vault.key(),
             slot,
             self.asset_indexer.index,

@@ -34,6 +34,7 @@ pub struct MintMaxSupply<'info> {
     pub system_program: Program<'info, System>,
 }
 
+// NOTE: need to add constraint so can only mint max supply once
 impl<'info> MintMaxSupply<'info> {
     pub fn mint(&mut self) -> Result<()> {
         self.program_authority.max_supply = ProgramAuthority::MAX_SUPPLY;
