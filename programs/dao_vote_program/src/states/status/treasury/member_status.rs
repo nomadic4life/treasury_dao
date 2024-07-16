@@ -80,6 +80,7 @@ impl MemberTreasuryStatus {
         if self.last_round.is_none() {
             let current_round = u64::from_be_bytes(treasury_status.current_round);
             self.deposit_total = amount;
+            self.valuation += amount;
             self.last_round = Some(current_round + 1);
             return;
         }

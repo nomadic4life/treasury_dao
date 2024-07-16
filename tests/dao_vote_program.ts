@@ -532,7 +532,6 @@ describe("dao_vote_program", () => {
           program.programId
         )
 
-
         await program.methods
           .initializeMint()
           .accounts({
@@ -738,7 +737,7 @@ describe("dao_vote_program", () => {
 
 
       await program.methods
-        .joinDao(new anchor.BN(1 * 1_000_000))
+        .joinDao(new anchor.BN(10 * 1_000_000))
         .accountsPartial({
           member: payer.publicKey,
           treasuryVault,
@@ -818,30 +817,70 @@ describe("dao_vote_program", () => {
 
   })
 
+  describe("Vote Pipeline", () => {
+
+    it("Create Position Proposal", async () => {
+
+      const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("authority")],
+        program.programId
+      )
+
+      const [mockPoolStatePubkey] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("mock-pubkey")],
+        program.programId
+      )
+
+      const [proposalConfig] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("proposal-config")],
+        program.programId
+      )
+
+      const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("0"),
+          Buffer.from("position-proposal"),
+        ],
+        program.programId
+      )
+
+      const [treasuryVault] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          programAuthority.toBuffer(),
+          Buffer.from("treasury-vault")
+        ],
+        program.programId
+      )
+
+      const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          payer.publicKey.toBuffer(),
+          Buffer.from("member-status")
+        ],
+        program.programId
+      )
+
+      await program.methods.makeProposal(new anchor.BN(100_000_000_000))
+        .accountsPartial({
+          member: payer.publicKey,
+          memberStatus,
+          poolState: mockPoolStatePubkey,
+          inputAssetVault: treasuryVault,
+          positionProposal,
+          proposalConfig,
+          programAuthority,
+          // systemProgram?
+        })
+        .signers([payer])
+        .rpc()
+    })
+  })
+
 
 
 })
 
-// it("Is initialized!", async () => {
-//   // need usdc token mint
 
-//   console.log(tokenMint.mint)
-
-//   const tx = await program.methods
-//     .initializeProgram()
-//     .accounts({
-//       usdcTokenMint: tokenMint.mint.publicKey,
-//       // tokenProgram: TOKEN_2022_PROGRAM_ID,
-
-//       // for testing, because can't figure out how to create ATA with TOKEN_2022_PROGRAM_ID,
-//       tokenProgram: TOKEN_PROGRAM_ID,
-
-//       usdcTokenProgram: TOKEN_PROGRAM_ID,
-//     })
-//     .rpc();
-//   // .prepare();
-//   console.log("Your transaction signature", tx);
-// });
 
 // it("Create Position Proposal!", async () => {
 

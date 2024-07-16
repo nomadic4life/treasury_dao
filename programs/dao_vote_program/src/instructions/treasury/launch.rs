@@ -19,7 +19,6 @@ pub struct LaunchToken<'info> {
         // ErrorCode::InvalidTreasuryMember,
         constraint = member_status.is_valid_launch_member(),
         // ErrorCode::InvalidTreasuryMember,
-
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 

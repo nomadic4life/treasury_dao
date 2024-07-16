@@ -28,20 +28,20 @@ pub struct CreateMemberTreasuryStatus<'info> {
     pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
     #[account(mut)]
-    pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub member_token_account: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
         address = program_authority.treasury_vault,
     )]
-    pub treasury_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub treasury_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         address = program_authority.treasury_mint,
     )]
-    pub token_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub token_mint: InterfaceAccount<'info, Mint>,
 
-    pub program_authority: Box<Account<'info, ProgramAuthority>>,
+    pub program_authority: Account<'info, ProgramAuthority>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
