@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{
     // STATE
     AssetConfig,
@@ -62,8 +63,8 @@ pub struct CreateAssetStatus<'info> {
 
     #[account(
         mut,
-        address = program_authority.asset_config,
-        // ErrorCode::InvalidConfig
+        address = program_authority.asset_config
+            @ ErrorCode::InvalidConfig,
     )]
     pub asset_config: Box<Account<'info, AssetConfig>>,
 

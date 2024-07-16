@@ -28,8 +28,6 @@ pub struct InitializeZeroCopyTokens<'info> {
 impl<'info> InitializeZeroCopyTokens<'info> {
     pub fn init(&mut self) -> Result<()> {
         self.token_status.load_init()?;
-        // should store the bump
-        // store the account on the program auhtority
         // emit log
 
         Ok(())

@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{ProgramAuthority, TREASURY_VAULT_SEED};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
@@ -22,8 +23,8 @@ pub struct InitializeTreasuryVault<'info> {
     pub treasury_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        address = program_authority.treasury_mint,
-        // ErrorCode::InvalidTreasuryMint
+        address = program_authority.treasury_mint
+            @ ErrorCode::InvalidTreasuryMint,
     )]
     pub treasury_mint: InterfaceAccount<'info, Mint>,
 

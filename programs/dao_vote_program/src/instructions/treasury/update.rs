@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{MemberTreasuryStatus, ProgramAuthority, TreasuryStatus};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{

@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{ProgramAuthority, LAUNCH_VAULT_SEED};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
@@ -22,8 +23,8 @@ pub struct InitializeLaunchVault<'info> {
     pub launch_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        address = program_authority.token_mint,
-        // ErrorCode::InvalidTokenMint
+        address = program_authority.token_mint
+            @ ErrorCode::InvalidTokenMint,
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
 

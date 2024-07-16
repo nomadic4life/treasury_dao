@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::ProgramAuthority;
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{mint_to, Mint, MintTo, TokenAccount, TokenInterface};
@@ -13,21 +14,21 @@ pub struct MintMaxSupply<'info> {
 
     #[account(
         mut,
-        address = program_authority.token_mint,
-        // ErrorCode::InvalidTokenMint,        
+        address = program_authority.token_mint
+            @ ErrorCode::InvalidTokenMint,        
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
         mut,
-        address = program_authority.launch_vault,
-        // ErrorCode::InvalidVault
+        address = program_authority.launch_vault
+            @ ErrorCode::InvalidVault,
     )]
     pub launch_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        address = program_authority.token_program,
-        // ErrorCode::InvalidTokenProgram
+        address = program_authority.token_program
+            @ ErrorCode::InvalidTokenProgram,
     )]
     pub token_program: Interface<'info, TokenInterface>,
 

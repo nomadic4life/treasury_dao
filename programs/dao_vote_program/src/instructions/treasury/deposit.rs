@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{MemberTreasuryStatus, ProgramAuthority, TreasuryStatus};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
@@ -11,13 +12,15 @@ pub struct TreasuryDeposit<'info> {
 
     #[account(
         mut,
-        constraint = member_status.authority == member.key(),
+        constraint = member_status.authority == member.key()
+            @ ErrorCode::InvalidTreasuryMember,
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 
     #[account(
         mut,
-        address = program_authority.treasury_status,
+        address = program_authority.treasury_status
+            @ ErrorCode::InvalidTreasuryStatus,
     )]
     pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
@@ -26,13 +29,15 @@ pub struct TreasuryDeposit<'info> {
 
     #[account(
         mut,
-        address = program_authority.treasury_vault,
+        address = program_authority.treasury_vault
+            @ ErrorCode::InvalidTreasuryVault,
     )]
     pub treasury_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
-        address = program_authority.treasury_mint,
+        address = program_authority.treasury_mint
+            @ ErrorCode::InvalidTreasuryMint,
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
 

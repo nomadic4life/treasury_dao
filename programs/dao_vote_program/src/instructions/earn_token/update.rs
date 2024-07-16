@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{MemberTokenStatus, MemberTreasuryStatus, ProgramAuthority, TokenStatus};
 use anchor_lang::prelude::*;
 
@@ -11,15 +12,15 @@ pub struct UpdateTokenStatus<'info> {
 
     #[account(
         mut,
-        constraint = member_status.authority == member.key(),
-        // ErrorCode::InvalidMemberEarnTokenStatus
+        constraint = member_status.authority == member.key()
+            @ ErrorCode::InvalidMemberEarnTokenStatus,
     )]
     pub member_status: Account<'info, MemberTokenStatus>,
 
     #[account(
         mut,
-        address = program_authority.token_status,
-        // ErrorCode::InvalidEarnTokenStatus
+        address = program_authority.token_status
+            @ ErrorCode::InvalidEarnTokenStatus,
     )]
     pub token_status: AccountLoader<'info, TokenStatus>,
 

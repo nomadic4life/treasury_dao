@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{AllocationTracker, StatusType, TREASURY_STATUS_SEED};
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{allocate, assign, Allocate, Assign};
@@ -9,8 +10,8 @@ pub struct AssignZeroCopyTreasury<'info> {
 
     #[account(
         mut,
-        constraint = allocation_tracker.status_type == StatusType::TreasuryStatus,
-        // ErrorCode::InvalidAllocationTracker
+        constraint = allocation_tracker.status_type == StatusType::TreasuryStatus
+            @ ErrorCode::InvalidAllocationTracker,
     )]
     pub allocation_tracker: Account<'info, AllocationTracker>,
 
@@ -25,8 +26,8 @@ pub struct AssignZeroCopyTreasury<'info> {
     pub treasury_status: SystemAccount<'info>,
 
     #[account(
-        address = allocation_tracker.program_authority,
-        // ErrorCode::InvalidProgramAuthorityAccount
+        address = allocation_tracker.program_authority
+            @ ErrorCode::InvalidProgramAuthorityAccount,
     )]
     pub program_authority: SystemAccount<'info>,
 

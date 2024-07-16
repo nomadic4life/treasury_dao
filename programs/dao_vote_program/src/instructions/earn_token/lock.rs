@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{MemberTokenStatus, MemberTreasuryStatus, ProgramAuthority, TokenStatus};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
@@ -14,8 +15,8 @@ pub struct LockTokens<'info> {
 
     #[account(
         mut,
-        constraint = member_status.authority == member.key(),
-        // ErrorCode::InvalidMemberEarnTokenStatus
+        constraint = member_status.authority == member.key()
+        @ ErrorCode::InvalidMemberEarnTokenStatus,
     )]
     pub member_status: Account<'info, MemberTokenStatus>,
 
@@ -24,22 +25,22 @@ pub struct LockTokens<'info> {
 
     #[account(
         mut,
-        address = program_authority.token_status,
-        // ErrorCode::InvalidEarnTokenStatus
+        address = program_authority.token_status
+            @ ErrorCode::InvalidEarnTokenStatus,
     )]
     pub token_status: AccountLoader<'info, TokenStatus>,
 
     #[account(
         mut,
-        address = program_authority.token_vault,
-        // ErrorCode::InvalidVault
+        address = program_authority.token_vault
+            @ ErrorCode::InvalidVault,
     )]
     pub token_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
-        address = program_authority.token_mint,
-        // ErrorCode::InvalidTokenMint
+        address = program_authority.token_mint
+            @ ErrorCode::InvalidTokenMint,
     )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 

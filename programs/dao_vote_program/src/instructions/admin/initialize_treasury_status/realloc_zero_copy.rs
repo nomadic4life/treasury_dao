@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{AllocationTracker, StatusType};
 use anchor_lang::prelude::*;
 
@@ -8,22 +9,22 @@ pub struct ReallocZeroCopyTreasury<'info> {
 
     #[account(
         mut,
-        constraint = allocation_tracker.status_type == StatusType::TreasuryStatus,
-        // ErrorCode::InvalidAllocationTracker
+        constraint = allocation_tracker.status_type == StatusType::TreasuryStatus
+            @ ErrorCode::InvalidAllocationTracker,
     )]
     pub allocation_tracker: Account<'info, AllocationTracker>,
 
     #[account(
         mut,
-        address = allocation_tracker.target_account,
-        // ErrorCode::InvalidTreasuryStatusAccount
+        address = allocation_tracker.target_account
+            @ ErrorCode::InvalidTreasuryStatusAccount,
     )]
     /// CHECKED: reacllocate treasury status
     pub treasury_status: AccountInfo<'info>,
 
     #[account(
-        address = allocation_tracker.program_authority,
-        // ErrorCode::InvalidProgramAuthorityAccount
+        address = allocation_tracker.program_authority
+            @ ErrorCode::InvalidProgramAuthorityAccount,
 
     )]
     pub program_authority: SystemAccount<'info>,

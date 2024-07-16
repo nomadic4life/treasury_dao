@@ -12,17 +12,19 @@ pub struct Swap<'info> {
     pub payer: Signer<'info>,
 
     #[account(
-        constraint = position_proposal.is_valid_position().unwrap(),
+        // constraint = position_proposal.is_valid_position().unwrap(),
+        // ErrorCode::ProposalIsRejected
+        // need constraint to ensure proposal is executed once
     )]
     pub position_proposal: Box<Account<'info, PositionProposal>>,
 
-    /// CHECK: pool vault and lp mint authority
     #[account(
-            seeds = [
-                AUTH_SEED.as_bytes(),
-            ],
-            bump,
-        )]
+        seeds = [
+            AUTH_SEED.as_bytes(),
+        ],
+        bump,
+    )]
+    /// CHECK: pool vault and lp mint authority
     pub authority: UncheckedAccount<'info>,
 
     /// CHECKED: only need the pubkey to execute the swap
@@ -34,12 +36,14 @@ pub struct Swap<'info> {
     #[account(
         mut,
         constraint = input_token_account.owner == program_authority.key(),
+        // ErrorCode::InvalidAssetVault
     )]
     pub input_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         mut,
         constraint = output_token_account.owner == program_authority.key(),
+        // ErrorCode::InvalidAssetVault
     )]
     pub output_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
@@ -54,11 +58,13 @@ pub struct Swap<'info> {
 
     #[account(
         address = input_vault.mint
+        // ErrorCode::InvalidMint
     )]
     pub input_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         address = output_vault.mint
+        // ErrorCode::InvalidMint
     )]
     pub output_token_mint: Box<InterfaceAccount<'info, Mint>>,
 
@@ -68,8 +74,15 @@ pub struct Swap<'info> {
     pub program_authority: Box<Account<'info, ProgramAuthority>>,
 }
 
-// using raydium
+// NOTE:
+//  - using raydium
+//  - no validations that depend on pool state taking place, will implement in future
+//  - currently implementing a mock swap, for test proof of concept
 impl<'info> Swap<'info> {
+    pub fn mock_swap(&mut self) -> Result<()> {
+        Ok(())
+    }
+
     pub fn swap(&mut self) -> Result<()> {
         // need to handle this better
         let raydium_program_id = "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C".as_bytes();

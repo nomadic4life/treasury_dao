@@ -1,4 +1,5 @@
 mod constants;
+mod errors;
 mod instructions;
 mod states;
 mod utils;
@@ -131,8 +132,8 @@ pub mod dao_vote_program {
         ctx.accounts.initialize(&ctx.bumps)
     }
 
-    pub fn testing_swap(ctx: Context<Swap>) -> Result<()> {
-        ctx.accounts.swap()
+    pub fn mock_swap(ctx: Context<Swap>) -> Result<()> {
+        ctx.accounts.mock_swap()
     }
 }
 

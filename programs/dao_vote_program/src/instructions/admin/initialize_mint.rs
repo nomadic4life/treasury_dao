@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{ProgramAuthority, DAO_TOKEN_MINT_SEED};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenInterface};
@@ -26,8 +27,8 @@ pub struct InitializeMint<'info> {
     pub token_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        address = program_authority.token_program,
-        // ErrorCode::InvalidTokenProgram
+        address = program_authority.token_program
+            @ ErrorCode::InvalidTokenProgram
     )]
     pub token_program: Interface<'info, TokenInterface>,
 

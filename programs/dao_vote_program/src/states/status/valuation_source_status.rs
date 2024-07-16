@@ -35,7 +35,3 @@ impl ValuationSourceStatus {
 
     pub fn needs_udpate_from_source(&mut self) -> bool {}
 }
-
-// accepted proposal
-// first create the asset tracker and asset vault, should do this before / the proposal set up
-// make swap

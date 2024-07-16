@@ -1,3 +1,4 @@
+use crate::errors::ErrorCode;
 use crate::states::{
     MemberTreasuryStatus, MemberVoteStatus, PositionProposal, ProgramAuthority, MEMBER_VOTE_STATUS,
 };
@@ -12,10 +13,10 @@ pub struct ClaimVotedTokens<'info> {
     pub member: Signer<'info>,
 
     #[account(
-        constraint = member_status.authority == member.key(),
-        // ErrorCode::InvalidTreasuryMember,
-        constraint = member_status.is_valid_member(),
-        // ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.authority == member.key()
+            @ ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.is_valid_member()
+            @ ErrorCode::InvalidTreasuryMember,
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 
@@ -34,15 +35,15 @@ pub struct ClaimVotedTokens<'info> {
 
     #[account(
         mut,
-        address = program_authority.token_mint,
-        // ErrorCode::InvalidTokenMint
+        address = program_authority.token_mint
+            @ ErrorCode::InvalidTokenMint,
     )]
     pub token_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         mut,
-        address = program_authority.ballot_vault,
-        // ErrorCode::InvalidVault
+        address = program_authority.ballot_vault
+            @ ErrorCode::InvalidVault,
     )]
     pub ballot_vault: Box<InterfaceAccount<'info, TokenAccount>>,
 

@@ -1,7 +1,9 @@
+use crate::errors::ErrorCode;
 use crate::states::{
     MemberTreasuryStatus, PositionProposal, ProgramAuthority, ProposalConfig,
     POSITION_PROPOSAL_SEED,
 };
+
 use anchor_lang::prelude::*;
 
 use anchor_spl::token_interface::TokenAccount;
@@ -13,10 +15,10 @@ pub struct CreatePositionProposal<'info> {
     pub member: Signer<'info>,
 
     #[account(
-        constraint = member_status.authority == member.key(),
-        // ErrorCode::InvalidTreasuryMember,
-        constraint = member_status.is_valid_member(),
-        // ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.authority == member.key()
+            @ ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.is_valid_member()
+            @ ErrorCode::InvalidTreasuryMember,
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 
@@ -26,10 +28,10 @@ pub struct CreatePositionProposal<'info> {
 
     #[account(
         mut,
-        constraint = input_asset_vault.owner == program_authority.key(),
-        // ErrorCode::InvalidAssetVaultOwner
+        constraint = input_asset_vault.owner == program_authority.key()
+            @ ErrorCode::InvalidAssetVaultOwner,
         constraint = input_asset_vault.amount >= amount
-        // ErrorCode::AssetVaultInsufficientAmount
+            @ ErrorCode::AssetVaultInsufficientAmount,
     )]
     pub input_asset_vault: InterfaceAccount<'info, TokenAccount>,
 
@@ -50,8 +52,8 @@ pub struct CreatePositionProposal<'info> {
 
     #[account(
         mut,
-        address = program_authority.proposal_config,
-        // ErrorCode::InvalidProposalConfig
+        address = program_authority.proposal_config
+            @ ErrorCode::InvalidProposalConfig,
     )]
     pub proposal_config: Account<'info, ProposalConfig>,
 

@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
-
+use crate::errors::ErrorCode;
 use crate::states::{MemberTreasuryStatus, ProgramAuthority, TreasuryStatus};
+use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
     transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked,
 };
@@ -15,19 +15,19 @@ pub struct LaunchToken<'info> {
 
     #[account(
         mut,
-        constraint = member_status.authority == member.key(),
-        // ErrorCode::InvalidTreasuryMember,
-        constraint = member_status.is_valid_launch_member(),
-        // ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.authority == member.key()
+            @ ErrorCode::InvalidTreasuryMember,
+        constraint = member_status.is_valid_launch_member()
+            @ ErrorCode::InvalidTreasuryMember,
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 
     #[account(
         mut,
-        address = program_authority.treasury_status,
-        // ErrorCode::InvalidTreasuryStatus,
-        // constraint = treasury_status.load()?.is_valid_launch(),
-        // ErrorCode::InvalidLaunch,
+        address = program_authority.treasury_status
+            @ ErrorCode::InvalidTreasuryStatus,
+        constraint = treasury_status.load()?.is_valid_launch()
+            @ ErrorCode::InvalidLaunch,
     )]
     pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
@@ -36,15 +36,15 @@ pub struct LaunchToken<'info> {
 
     #[account(
         mut,
-        address = program_authority.launch_vault,
-        // ErrorCode::InvalidLaunchVault,
+        address = program_authority.launch_vault
+            @ ErrorCode::InvalidLaunchVault,
     )]
     pub launch_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
-        address = program_authority.token_mint,
-        // ErrorCode::InvalidTokenMint,
+        address = program_authority.token_mint
+            @ ErrorCode::InvalidTokenMint,
     )]
     pub token_mint: InterfaceAccount<'info, Mint>,
     pub token_program: Interface<'info, TokenInterface>,
