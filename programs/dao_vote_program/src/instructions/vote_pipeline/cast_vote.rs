@@ -1,4 +1,6 @@
-use crate::states::{MemberTreasuryStatus, MemberVoteStatus, PositionProposal, ProgramAuthority};
+use crate::states::{
+    MemberTreasuryStatus, MemberVoteStatus, PositionProposal, ProgramAuthority, MEMBER_VOTE_STATUS,
+};
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{
     transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked,
@@ -11,7 +13,9 @@ pub struct CastVote<'info> {
 
     #[account(
         constraint = member_status.authority == member.key(),
+        // ErrorCode::InvalidTreasuryMember,
         constraint = member_status.is_valid_member(),
+        // ErrorCode::InvalidTreasuryMember,
     )]
     pub member_status: Account<'info, MemberTreasuryStatus>,
 
@@ -22,7 +26,7 @@ pub struct CastVote<'info> {
         seeds = [
             member.key().as_ref(),
             position_proposal.key().as_ref(),
-            b"member-vote-status"
+            MEMBER_VOTE_STATUS.as_bytes(),
         ],
         bump,
     )]
@@ -31,19 +35,23 @@ pub struct CastVote<'info> {
     #[account(
         mut,
         address = program_authority.token_mint,
+        // ErrorCode::InvalidTokenMint
     )]
-    pub token_mint: Box<InterfaceAccount<'info, Mint>>,
+    pub token_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
         mut,
         address = program_authority.ballot_vault,
+        // ErrorCode::InvalidVault
     )]
-    pub ballot_vault: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub ballot_vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(mut)]
-    pub member_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub member_token_account: InterfaceAccount<'info, TokenAccount>,
 
-    pub program_authority: Box<Account<'info, ProgramAuthority>>,
+    pub program_authority: Account<'info, ProgramAuthority>,
+
+    // add constraint that it's an active proposal
     pub position_proposal: Account<'info, PositionProposal>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,

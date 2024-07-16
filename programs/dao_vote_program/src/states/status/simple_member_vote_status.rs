@@ -2,6 +2,8 @@ use crate::constants::*;
 use anchor_lang::prelude::*;
 pub use anchor_lang::solana_program::pubkey::PUBKEY_BYTES;
 
+pub const MEMBER_VOTE_STATUS: &str = "member-vote-status";
+
 #[account]
 pub struct MemberVoteStatus {
     pub bump: u8,
@@ -11,7 +13,7 @@ pub struct MemberVoteStatus {
 }
 
 impl MemberVoteStatus {
-    pub const LEN: usize = DISCRIMINATOR + PUBKEY_BYTES + UNSIGNED_64 + BYTE;
+    pub const LEN: usize = DISCRIMINATOR + BYTE + PUBKEY_BYTES + UNSIGNED_64 + BYTE;
 
     pub fn init(&mut self, bump: u8, member: Pubkey, amount: u64, multiplier: u8) {
         self.bump = bump;
