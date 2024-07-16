@@ -1,4 +1,4 @@
-use crate::states::{MemberTokenStatus, ProgramAuthority, TokenStatus};
+use crate::states::{MemberTokenStatus, MemberTreasuryStatus, ProgramAuthority, TokenStatus};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -6,16 +6,20 @@ pub struct UpdateTokenStatus<'info> {
     #[account(mut)]
     pub member: Signer<'info>,
 
-    // how to optionally include the member treasury status?
+    // checking constraint doesn't work on optional accounts, need to manually check with require!
+    pub member_treasury_status: Option<Account<'info, MemberTreasuryStatus>>,
+
     #[account(
         mut,
         constraint = member_status.authority == member.key(),
+        // ErrorCode::InvalidMemberEarnTokenStatus
     )]
     pub member_status: Account<'info, MemberTokenStatus>,
 
     #[account(
         mut,
         address = program_authority.token_status,
+        // ErrorCode::InvalidEarnTokenStatus
     )]
     pub token_status: AccountLoader<'info, TokenStatus>,
 

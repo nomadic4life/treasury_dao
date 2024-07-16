@@ -697,7 +697,7 @@ describe("dao_vote_program", () => {
 
     describe("Launch Phase", () => {
 
-      it("Join DAO", async () => {
+      it("Join DAO -> Launch Members Deposit", async () => {
 
         const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
           [Buffer.from("authority")],
@@ -815,6 +815,26 @@ describe("dao_vote_program", () => {
           })
           .signers([payer])
           .rpc();
+      })
+
+    })
+
+    describe("Treasury Member", () => {
+
+      it("Join DAO Treasury Member -> Non-Launch Member", async () => {
+
+      })
+
+      it("Deposit Into Treasury", async () => {
+
+      })
+
+      it("Update Treasury Status", async () => {
+
+      })
+
+      it("Claim From Treasury", async () => {
+
       })
 
     })
@@ -1051,87 +1071,293 @@ describe("dao_vote_program", () => {
 
       })
 
+      it("Execute Passed Position Proposal Swap", async () => {
+
+      })
+
     })
+
+    describe("Earn System Locked Vote Tokens", () => {
+
+      it("Intialize Status", async () => {
+
+        await program.methods.initializeEarnTokenMemberStatus()
+          .accounts({
+            member: payer.publicKey
+          })
+          .signers([payer])
+          .rpc()
+      })
+
+      it("Lock | Deposit Tokens Into Token Vault", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("dao-token-mint")
+          ],
+          program.programId
+        )
+
+        const [tokenVault] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-vault")
+          ],
+          program.programId
+        )
+
+        const [tokenStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-status")
+          ],
+          program.programId
+        )
+
+        const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            payer.publicKey.toBuffer(),
+            Buffer.from("member-earn-token-status")
+          ],
+          program.programId
+        )
+
+        const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+          provider.connection,
+          payer,
+          programTokenMint,
+          payer.publicKey,
+        )
+
+        await program.methods.lockIntoTokenVault(new anchor.BN(100))
+          .accounts({
+            member: payer.publicKey,
+            memberTreasuryStatus: null,
+            memberStatus,
+            memberTokenAccount: memberTokenAccount.address,
+            tokenStatus,
+            tokenVault,
+            tokenMint: programTokenMint,
+            programAuthority,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            // systemProgram?
+          })
+          .signers([payer])
+          .rpc()
+      })
+
+      it("Deposit | Add Tokens Into Token Vault -> NO UPDATE TAKING PLACE, NEED TO ADVANCE THE SLOT A SIGNIFIGANT AMOUNT TO TEST FULLY", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("dao-token-mint")
+          ],
+          program.programId
+        )
+
+        const [tokenVault] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-vault")
+          ],
+          program.programId
+        )
+
+        const [tokenStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-status")
+          ],
+          program.programId
+        )
+
+        const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            payer.publicKey.toBuffer(),
+            Buffer.from("member-earn-token-status")
+          ],
+          program.programId
+        )
+
+        const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+          provider.connection,
+          payer,
+          programTokenMint,
+          payer.publicKey,
+        )
+
+        await program.methods.lockIntoTokenVault(new anchor.BN(100))
+          .accounts({
+            member: payer.publicKey,
+            memberTreasuryStatus: null,
+            memberStatus,
+            memberTokenAccount: memberTokenAccount.address,
+            tokenStatus,
+            tokenVault,
+            tokenMint: programTokenMint,
+            programAuthority,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            // systemProgram?
+          })
+          .signers([payer])
+          .rpc()
+
+      })
+
+      it("Update Position -> NO UPDATE TAKING PLACE, NEED TO ADVANCE THE SLOT A SIGNIFIGANT AMOUNT TO TEST FULLY", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            payer.publicKey.toBuffer(),
+            Buffer.from("member-earn-token-status")
+          ],
+          program.programId
+        )
+
+        const [tokenStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-status")
+          ],
+          program.programId
+        )
+
+        await program.methods.updateTokenVault()
+          .accounts({
+            memberTreasuryStatus: null,
+            member: payer.publicKey,
+            memberStatus,
+            tokenStatus,
+            programAuthority,
+          })
+          .signers([payer])
+          .rpc()
+      })
+
+      it("Claim Tokens", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            payer.publicKey.toBuffer(),
+            Buffer.from("member-earn-token-status")
+          ],
+          program.programId
+        )
+
+        const [tokenStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-status")
+          ],
+          program.programId
+        )
+
+        const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("dao-token-mint")
+          ],
+          program.programId
+        )
+
+        const [tokenVault] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("token-vault")
+          ],
+          program.programId
+        )
+
+        const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+          provider.connection,
+          payer,
+          programTokenMint,
+          payer.publicKey,
+        )
+
+        await program.methods.withdrawFromTokenVault(new anchor.BN(10))
+          .accounts({
+            member: payer.publicKey,
+            memberTreasuryStatus: null,
+            memberStatus,
+            memberTokenAccount: memberTokenAccount.address,
+            tokenStatus,
+            tokenVault,
+            tokenMint: programTokenMint,
+            programAuthority,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            // systemProgram?
+          })
+          .signers([payer])
+          .rpc()
+      })
+
+    })
+
+    describe("Earn System Treasury Gains -> FEATURES NOT CURRENTLY IMPLEMENTED", () => {
+      it("", async () => {
+      })
+
+      // it("Intialize Status", async () => {
+      // })
+
+      // it("Lock Tokens", async () => {
+      // })
+
+      // it("Deposit Tokens", async () => {
+      // })
+
+      // it("Update Position", async () => {
+      // })
+
+      // it("Claim Tokens", async () => {
+      // })
+
+    })
+
+    describe("Earn System Yield Gains -> FEATURES NOT CURRENTLY IMPLEMENTED", () => {
+      it("", async () => {
+      })
+
+      // it("Intialize Status", async () => {
+      // })
+
+      // it("Lock Tokens", async () => {
+      // })
+
+      // it("Deposit Tokens", async () => {
+      // })
+
+      // it("Update Position", async () => {
+      // })
+
+      // it("Claim Tokens", async () => {
+      // })
+
+    })
+
   })
 
-
-
 })
-
-
-
-
-
-// it("Cast Vote", async () => {
-
-//   const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
-//     [Buffer.from("authority")],
-//     program.programId
-//   )
-
-//   const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
-//     [
-//       programAuthority.toBuffer(),
-//       Buffer.from("dao-token-mint"),
-//     ],
-//     program.programId
-//   )
-
-//   const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
-//     [
-//       Buffer.from("0"),
-//       Buffer.from("position-proposal"),
-//     ],
-//     program.programId
-//   )
-
-//   const [memberVoteStatus] = anchor.web3.PublicKey.findProgramAddressSync(
-//     [
-//       payer.publicKey.toBuffer(),
-//       positionProposal.toBuffer(),
-//       Buffer.from("member-vote-status"),
-//     ],
-//     program.programId
-//   )
-
-//   const [tokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
-//     [
-//       programAuthority.toBuffer(),
-//       Buffer.from("dao-token-mint"),
-//     ],
-//     program.programId
-//   )
-
-//   const [ballotVault] = anchor.web3.PublicKey.findProgramAddressSync(
-//     [
-//       programAuthority.toBuffer(),
-//       Buffer.from("ballot-vault"),
-//     ],
-//     program.programId
-//   )
-
-//   const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
-//     provider.connection, // connection
-//     payer, // payer
-//     programTokenMint, // mint
-//     payer.publicKey,// owner
-//   )
-
-//   const tx = await program.methods
-//     .castVote(new anchor.BN(1), 1, true)
-//     .accountsPartial({
-//       member: payer.publicKey,
-//       memberVoteStatus,
-//       programAuthority,
-//       tokenMint,
-//       ballotVault,
-//       positionProposal,
-//       memberTokenAccount: memberTokenAccount.address,
-//       tokenProgram: TOKEN_PROGRAM_ID,
-//       systemProgram: SYSTEM_PROGRAM_ID,
-//     })
-//     .signers([payer])
-//     .rpc();
-
-//   console.log("Your transaction signature", tx);
-// })

@@ -99,6 +99,7 @@ impl TokenStatus {
         let slot = clock.slot;
         let last_slot_update = u64::from_be_bytes(self.last_slot_update);
 
+        // this is the bug -> need to update this in all vaults
         if (slot % TokenStatus::MAX_SLOT_RANGE) < last_slot_update {
             let mut current_round = u64::from_be_bytes(self.current_round);
             let Field {
@@ -108,6 +109,7 @@ impl TokenStatus {
                 ..
             } = self.read(current_round as usize);
 
+            // here is our bug
             let balance = starting_balance + deposit_total - withdraw_total;
 
             current_round += 1;

@@ -1,4 +1,4 @@
-use crate::states::MemberTokenStatus;
+use crate::states::{MemberTokenStatus, MEMBER_EARN_TOKEN_STATUS_SEED};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -12,7 +12,7 @@ pub struct InitliazeMemberTokenStatus<'info> {
         space = MemberTokenStatus::LEN,
         seeds = [
             member.key().as_ref(),
-            b"member-status"
+            MEMBER_EARN_TOKEN_STATUS_SEED.as_bytes(),
         ],
         bump,
     )]

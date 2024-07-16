@@ -109,15 +109,17 @@ pub mod dao_vote_program {
         ctx.accounts.claim()
     }
 
-    pub fn initialize_token_member_status(ctx: Context<InitliazeMemberTokenStatus>) -> Result<()> {
+    pub fn initialize_earn_token_member_status(
+        ctx: Context<InitliazeMemberTokenStatus>,
+    ) -> Result<()> {
         ctx.accounts.initialize()
     }
 
-    pub fn deposit_token_vault(ctx: Context<LockTokens>, amount: u64) -> Result<()> {
+    pub fn lock_into_token_vault(ctx: Context<LockTokens>, amount: u64) -> Result<()> {
         ctx.accounts.lock(amount)
     }
 
-    pub fn withdraw_token_vault(ctx: Context<ClaimTokens>, amount: u64) -> Result<()> {
+    pub fn withdraw_from_token_vault(ctx: Context<ClaimTokens>, amount: u64) -> Result<()> {
         ctx.accounts.claim(amount)
     }
 

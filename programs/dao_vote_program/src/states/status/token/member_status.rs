@@ -2,6 +2,8 @@ use crate::constants::*;
 use crate::states::*;
 use anchor_lang::prelude::*;
 
+pub const MEMBER_EARN_TOKEN_STATUS_SEED: &str = "member-earn-token-status";
+
 #[account]
 pub struct MemberTokenStatus {
     pub authority: Pubkey,
@@ -10,7 +12,7 @@ pub struct MemberTokenStatus {
 }
 
 impl MemberTokenStatus {
-    pub const LEN: usize = DISCRIMINATOR + PUBKEY_BYTES + (BYTE + UNSIGNED_16) + UNSIGNED_64;
+    pub const LEN: usize = DISCRIMINATOR + PUBKEY_BYTES + (BYTE + UNSIGNED_64) + UNSIGNED_64;
     const MAX: u64 = 20;
     const PERCENT_SHIFT: u64 = 100_00;
     const MEMBER_RATE: u64 = 80;
@@ -24,6 +26,13 @@ impl MemberTokenStatus {
 
     pub fn update(&mut self, vault_status: &TokenStatus, is_treasury_member: bool) {
         let target = u64::from_be_bytes(vault_status.current_round);
+
+        // need update in all member status updates
+        if !(target > self.last_round.unwrap()) {
+            // emit log -> showing now update took place
+            return;
+        }
+
         let advance = if target - self.last_round.unwrap() <= MemberTokenStatus::MAX {
             1
         } else {
@@ -59,6 +68,7 @@ impl MemberTokenStatus {
         }
 
         self.update(vault_status, is_treasury_member);
+
         self.balance += amount;
     }
 
