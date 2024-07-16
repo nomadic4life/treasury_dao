@@ -862,8 +862,6 @@ describe("dao_vote_program", () => {
           program.programId
         )
 
-
-
         await program.methods.makeProposal(new anchor.BN(100))
           .accountsPartial({
             member: payer.publicKey,
@@ -937,6 +935,78 @@ describe("dao_vote_program", () => {
             positionProposal,
             tokenProgram: TOKEN_PROGRAM_ID,
             // systemProgram?,
+          })
+          .signers([payer])
+          .rpc()
+      })
+
+      it("Members Reclaim Vote Token", async () => {
+
+        const [programAuthority] = anchor.web3.PublicKey.findProgramAddressSync(
+          [Buffer.from("authority")],
+          program.programId
+        )
+
+        const [positionProposal] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("0"),
+            Buffer.from("position-proposal"),
+          ],
+          program.programId
+        )
+
+        const [ballotVault] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("ballot-vault")
+          ],
+          program.programId
+        )
+
+        const [programTokenMint] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            programAuthority.toBuffer(),
+            Buffer.from("dao-token-mint")
+          ],
+          program.programId
+        )
+
+        const [memberStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            payer.publicKey.toBuffer(),
+            Buffer.from("member-status")
+          ],
+          program.programId
+        )
+
+        const [memberVoteStatus] = anchor.web3.PublicKey.findProgramAddressSync(
+          [
+            payer.publicKey.toBuffer(),
+            positionProposal.toBuffer(),
+            Buffer.from("member-vote-status")
+          ],
+          program.programId
+        )
+
+        const memberTokenAccount = await getOrCreateAssociatedTokenAccount(
+          provider.connection,
+          payer,
+          programTokenMint,
+          payer.publicKey,
+        )
+
+        await program.methods.claimVoteToken()
+          .accountsPartial({
+            member: payer.publicKey,
+            memberStatus,
+            memberVoteStatus,
+            tokenMint: programTokenMint,
+            ballotVault,
+            memberTokenAccount: memberTokenAccount.address,
+            positionProposal,
+            programAuthority,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            // systemProgram
           })
           .signers([payer])
           .rpc()

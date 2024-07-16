@@ -44,6 +44,7 @@ impl PositionProposal {
     }
 
     // need to handle possible interger overflow
+    // also should set this to enum
     pub fn vote(&mut self, is_yes: bool, amount: u64) {
         if is_yes {
             self.vote_yes_total += amount;
@@ -54,10 +55,11 @@ impl PositionProposal {
 
     pub fn is_valid_position(&self) -> Result<bool> {
         let slot = Clock::get()?.slot;
-        if !(slot >= self.deadline) && self.vote_yes_total > self.vote_no_total {
-            return Ok(false);
-        }
+        Ok(slot >= self.deadline && self.vote_yes_total > self.vote_no_total)
+    }
 
-        Ok(true)
+    pub fn is_valid_claim(&self) -> Result<bool> {
+        let slot = Clock::get()?.slot;
+        Ok(slot >= self.deadline)
     }
 }
