@@ -26,8 +26,8 @@ pub struct LaunchToken<'info> {
         mut,
         address = program_authority.treasury_status
             @ ErrorCode::InvalidTreasuryStatus,
-        constraint = treasury_status.load()?.is_valid_launch()
-            @ ErrorCode::InvalidLaunch,
+        // constraint = treasury_status.load()?.is_valid_launch()
+        //     @ ErrorCode::InvalidLaunch,
     )]
     pub treasury_status: AccountLoader<'info, TreasuryStatus>,
 
